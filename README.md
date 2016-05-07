@@ -8,7 +8,7 @@ if the view did not add constraints, you need to rotate the view manually when s
 
 ## Installation
 
-> pod 'BSNumbers', '~> 0.0.4'
+> pod 'BSNumbers', '~> 0.1.0'
 
 ## Usage
 
@@ -54,4 +54,33 @@ self.numbersView.bodyFont = [UIFont systemFontOfSize:14];
 ###Display
 ```objective-c
 [self.numbersView reloadData];
+```
+###Use delegate
+
+```objective-c
+#pragma mark -- BSNumbersViewDelegate
+
+- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeInColumn:(NSInteger)column text:(NSString *)text {
+    CGSize size = [numbersView sizeForFreezeColumn:column];
+    
+    UIView *view = [UIView new];
+    view.backgroundColor = [UIColor lightGrayColor];
+    
+    UIView *square = [UIView new];
+    square.backgroundColor = [UIColor orangeColor];
+    square.frame = CGRectMake(0, 0, 15, 15);
+    square.center = CGPointMake(size.width/2 - 35, size.height/2);
+    [view addSubview:square];
+    
+    UILabel *label = [UILabel new];
+    label.text = text;
+    label.textColor = [UIColor whiteColor];
+    label.font = [UIFont systemFontOfSize:14];
+    label.frame = CGRectMake(0, 0, 100, 100);
+    label.center = CGPointMake(size.width/2 + 10, size.height/2);
+    label.textAlignment = NSTextAlignmentCenter;
+    [view addSubview:label];
+    
+    return view;
+}
 ```
