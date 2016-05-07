@@ -4,7 +4,7 @@
 
 if the view did not add constraints, you need to rotate the view manually when screen's orientation changed.
 
-![BSNumbersGIF.gif](https://github.com/blurryssky/BSNumbers/tree/master/Screenshots)
+![BSNumbersGIF.gif](https://github.com/blurryssky/BSNumbers/blob/master/Screenshots/BSNumbersGIF.gif)
 
 ## Installation
 
