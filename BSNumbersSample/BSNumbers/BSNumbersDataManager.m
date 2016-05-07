@@ -42,12 +42,12 @@
 
 - (void)configureFlatData {
     NSMutableArray *freezeCollectionViewFlatData = @[].mutableCopy;
-    NSMutableArray *slidingCollectionViewFlatData = @[].mutableCopy;
+    NSMutableArray *slideCollectionViewFlatData = @[].mutableCopy;
     
     for (NSInteger i = 0; i < self.flatData.count; i ++) {
         
         NSMutableArray *freezeCollectionViewSectionFlatData = @[].mutableCopy;
-        NSMutableArray *slidingCollectionViewSectionFlatData = @[].mutableCopy;
+        NSMutableArray *slideCollectionViewSectionFlatData = @[].mutableCopy;
         
         NSArray<NSString *> *flatData = self.flatData[i];
         
@@ -58,30 +58,30 @@
             if (j < self.freezeColumn) {
                 [freezeCollectionViewSectionFlatData addObject:value];
             } else {
-                [slidingCollectionViewSectionFlatData addObject:value];
+                [slideCollectionViewSectionFlatData addObject:value];
             }
         }
         [freezeCollectionViewFlatData addObject:freezeCollectionViewSectionFlatData];
-        [slidingCollectionViewFlatData addObject:slidingCollectionViewSectionFlatData];
+        [slideCollectionViewFlatData addObject:slideCollectionViewSectionFlatData];
         
     }
     
     if (self.headerData) {
         _headerFreezeCollectionViewFlatData = freezeCollectionViewFlatData.firstObject;
-        _headerSlidingCollectionViewFlatData = slidingCollectionViewFlatData.firstObject;
+        _headerSlideCollectionViewFlatData = slideCollectionViewFlatData.firstObject;
         
         _freezeCollectionViewFlatData = [freezeCollectionViewFlatData subarrayWithRange:NSMakeRange(1, freezeCollectionViewFlatData.count - 1)];
-        _slidingCollectionViewFlatData = [slidingCollectionViewFlatData subarrayWithRange:NSMakeRange(1, freezeCollectionViewFlatData.count - 1)];
+        _slideCollectionViewFlatData = [slideCollectionViewFlatData subarrayWithRange:NSMakeRange(1, freezeCollectionViewFlatData.count - 1)];
     } else {
         _freezeCollectionViewFlatData = freezeCollectionViewFlatData.copy;
-        _slidingCollectionViewFlatData = slidingCollectionViewFlatData.copy;
+        _slideCollectionViewFlatData = slideCollectionViewFlatData.copy;
     }
 
 }
 
 - (void)caculateWidths {
     NSMutableArray<NSString *> *freezeCollectionViewColumnsItemSize = @[].mutableCopy;
-    NSMutableArray<NSString *> *slidingCollectionViewColumnsItemSize = @[].mutableCopy;
+    NSMutableArray<NSString *> *slideCollectionViewColumnsItemSize = @[].mutableCopy;
 
     NSInteger columnsCount = self.flatData.firstObject.count;
     
@@ -95,12 +95,12 @@
             
             NSString *columnValue = self.flatData[j][i];
             
-            CGSize size = [columnValue sizeWithFont:self.bodyFont constraint:CGSizeMake(self.maxItemWidth, self.itemHeight)];
+            CGSize size = [columnValue sizeWithFont:self.slideBodyFont constraint:CGSizeMake(self.maxItemWidth, self.itemHeight)];
             if (j == 0) {
                 size = [columnValue sizeWithFont:self.headerFont constraint:CGSizeMake(self.maxItemWidth, self.itemHeight)];
             }
             
-            CGFloat targetWidth = size.width + 2 * self.itemHorizontalMargin;
+            CGFloat targetWidth = size.width + 2 * self.itemTextHorizontalMargin;
             
             if (targetWidth >= columnMaxWidth) {
                 columnMaxWidth = targetWidth;
@@ -113,13 +113,13 @@
             [freezeCollectionViewColumnsItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
             _freezeCollectionViewWidth += columnMaxWidth;
         } else {
-            [slidingCollectionViewColumnsItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
-            _slidingCollectionViewWidth += columnMaxWidth;
+            [slideCollectionViewColumnsItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
+            _slideCollectionViewWidth += columnMaxWidth;
         }
     }
     
     _freezeCollectionViewColumnsItemSize = freezeCollectionViewColumnsItemSize.copy;
-    _slidingCollectionViewColumnsItemSize = slidingCollectionViewColumnsItemSize.copy;
+    _slideCollectionViewColumnsItemSize = slideCollectionViewColumnsItemSize.copy;
 }
 
 #pragma mark - Public

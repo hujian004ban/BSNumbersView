@@ -7,8 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
+@class BSNumbersView;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@protocol BSNumbersViewDelegate <NSObject>
+
+@optional
+
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeInColumn:(NSInteger)column text:(NSString *)text;
+
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodySlideInColumn:(NSInteger)column text:(NSString *)text;;
+
+@end
 
 @interface BSNumbersView : UIView
+
+@property (assign, nonatomic) id<BSNumbersViewDelegate> delegate;
 
 ///min width for each square
 @property (assign, nonatomic) CGFloat minItemWidth;
@@ -19,8 +34,8 @@
 ///height for each square
 @property (assign, nonatomic) CGFloat itemHeight;
 
-///horizontal margin for each square
-@property (assign, nonatomic) CGFloat itemHorizontalMargin;
+///text horizontal margin for each item, default is 10.0
+@property (assign, nonatomic) CGFloat itemTextHorizontalMargin;
 
 ///the column need to freeze
 @property (assign, nonatomic) NSInteger freezeColumn;
@@ -35,13 +50,13 @@
 @property (strong, nonatomic) UIColor *headerBackgroundColor;
 
 ///body font
-@property (strong, nonatomic) UIFont *bodyFont;
+@property (strong, nonatomic) UIFont *slideBodyFont;
 
 ///body text color
-@property (strong, nonatomic) UIColor *bodyTextColor;
+@property (strong, nonatomic) UIColor *slideBodyTextColor;
 
 ///body background color
-@property (strong, nonatomic) UIColor *bodyBackgroundColor;
+@property (strong, nonatomic) UIColor *slideBodyBackgroundColor;
 
 ///body font
 @property (strong, nonatomic) UIFont *freezeBodyFont;
@@ -53,10 +68,15 @@
 @property (strong, nonatomic) UIColor *freezeBodyBackgroundColor;
 
 ///data
-
 @property (strong, nonatomic) NSArray<NSString *> *headerData;
 @property (strong, nonatomic) NSArray<NSObject *> *bodyData;
 
+
+- (CGSize)sizeForFreezeColumn:(NSInteger )column;
+- (CGSize)sizeForSlideColumn:(NSInteger )column;
+
 - (void)reloadData;
+
+NS_ASSUME_NONNULL_END
 
 @end

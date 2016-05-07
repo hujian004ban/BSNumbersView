@@ -11,7 +11,7 @@
 #import "BSNumbersView.h"
 #import "NSObject+BSNumbersExtension.h"
 
-@interface ViewController ()
+@interface ViewController () <BSNumbersViewDelegate>
 
 @property (weak, nonatomic) IBOutlet BSNumbersView *numbersView;
 
@@ -33,14 +33,45 @@
         [flights addObject:flight];
     }
     
+    self.numbersView.delegate = self;
     
     self.numbersView.bodyData = flights;
     
     self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
     self.numbersView.freezeColumn = 1;
-    self.numbersView.bodyFont = [UIFont systemFontOfSize:14];
+    self.numbersView.slideBodyFont = [UIFont systemFontOfSize:14];
     
     [self.numbersView reloadData];
+}
+
+#pragma mark -- BSNumbersViewDelegate
+
+- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeInColumn:(NSInteger)column text:(NSString *)text {
+    CGSize size = [numbersView sizeForFreezeColumn:column];
+    
+    UIView *view = [UIView new];
+    view.backgroundColor = [UIColor lightGrayColor];
+    
+    UIView *square = [UIView new];
+    square.backgroundColor = [UIColor orangeColor];
+    square.frame = CGRectMake(0, 0, 15, 15);
+    square.center = CGPointMake(size.width/2 - 35, size.height/2);
+    [view addSubview:square];
+    
+    UILabel *label = [UILabel new];
+    label.text = text;
+    label.textColor = [UIColor whiteColor];
+    label.font = [UIFont systemFontOfSize:14];
+    label.frame = CGRectMake(0, 0, 100, 100);
+    label.center = CGPointMake(size.width/2 + 10, size.height/2);
+    label.textAlignment = NSTextAlignmentCenter;
+    [view addSubview:label];
+    
+    return view;
+}
+
+- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodySlideInColumn:(NSInteger)column text:(NSString *)text {
+    return nil;
 }
 
 
