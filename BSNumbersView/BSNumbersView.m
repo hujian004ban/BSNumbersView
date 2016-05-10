@@ -52,11 +52,6 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 @implementation BSNumbersView
 #pragma mark - Override
 
-- (void)awakeFromNib {
-    [super awakeFromNib];
-    [self setup];
-}
-
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -69,6 +64,14 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 - (instancetype)init
 {
     self = [super init];
+    if (self) {
+        [self setup];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
     if (self) {
         [self setup];
     }
@@ -119,9 +122,7 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 }
 
 - (void)setupViews {
-    self.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.layer.borderWidth = 0.5;
-    
+
     [self addSubview:self.headerFreezeCollectionView];
     [self addSubview:self.freezeCollectionView];
     
@@ -419,8 +420,9 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     
     cell.label.text = @"";
     customView.frame = cell.bounds;
-    [customView removeFromSuperview];
-    [cell addSubview:customView];
+    
+    [cell insertSubview:customView aboveSubview:cell.label];
+    cell.customView = customView;
 }
 
 #pragma mark - Cell Configuration
@@ -428,7 +430,9 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 - (void)configureHeaderFreezeCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
     NSString *text = self.dataManager.headerFreezeData[indexPath.row];
     cell.label.text = text;
+    cell.backgroundColor = self.headerBackgroundColor;
     
+    [cell.customView removeFromSuperview];
     if ([self didImplementation:@selector(numbersView:viewForHeaderFreezeAtColumn:)]) {
         UIView *customView = [self.delegate numbersView:self viewForHeaderFreezeAtColumn:indexPath.row];
         if (customView) {
@@ -446,14 +450,15 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     }
     
     cell.label.textColor = self.headerTextColor;
-    cell.backgroundColor = self.headerBackgroundColor;
     cell.label.font = self.headerFont;
 }
 
 - (void)configureHeaderSlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
     NSString *text = self.dataManager.headerSlideData[indexPath.row];
     cell.label.text = text;
+    cell.backgroundColor = self.headerBackgroundColor;
     
+    [cell.customView removeFromSuperview];
     if ([self didImplementation:@selector(numbersView:viewForHeaderSlideAtColumn:)]) {
         UIView *customView = [self.delegate numbersView:self viewForHeaderSlideAtColumn:indexPath.row];
         if (customView) {
@@ -471,7 +476,6 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     }
     
     cell.label.textColor = self.headerTextColor;
-    cell.backgroundColor = self.headerBackgroundColor;
     cell.label.font = self.headerFont;
 }
 
@@ -479,7 +483,9 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 
     NSString *text = self.dataManager.bodyFreezeData[indexPath.section][indexPath.row];
     cell.label.text = text;
+    cell.backgroundColor = self.freezeBodyBackgroundColor;
     
+    [cell.customView removeFromSuperview];
     if ([self didImplementation:@selector(numbersView:viewForBodyFreezeAtIndexPath:)]) {
         UIView *customView = [self.delegate numbersView:self viewForBodyFreezeAtIndexPath:indexPath];
         if (customView) {
@@ -497,14 +503,15 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     }
 
     cell.label.textColor = self.freezeBodyTextColor;
-    cell.backgroundColor = self.freezeBodyBackgroundColor;
     cell.label.font = self.freezeBodyFont;
 }
 
 - (void)configureBodySlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
     NSString *text = self.dataManager.bodySlideData[indexPath.section][indexPath.row];
     cell.label.text = text;
+    cell.backgroundColor = self.slideBodyBackgroundColor;
     
+    [cell.customView removeFromSuperview];
     if ([self didImplementation:@selector(numbersView:viewForBodySlideAtIndexPath:)]) {
         UIView *customView = [self.delegate numbersView:self viewForBodySlideAtIndexPath:indexPath];
         if (customView) {
@@ -522,7 +529,6 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     }
     
     cell.label.textColor = self.slideBodyTextColor;
-    cell.backgroundColor = self.slideBodyBackgroundColor;
     cell.label.font = self.slideBodyFont;
 }
 

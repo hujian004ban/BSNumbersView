@@ -10,7 +10,7 @@
 
 @interface BSNumbersCollectionCell ()
 
-@property (strong ,nonatomic) CAShapeLayer *verticalDivideLineLayer;
+@property (strong ,nonatomic) CAShapeLayer *separatorLayer;
 
 - (void)setup;
 - (void)updateFrame;
@@ -42,7 +42,7 @@
 #pragma mark - Private
 - (void)setup {
     [self addSubview:self.label];
-    [self.layer addSublayer:self.verticalDivideLineLayer];
+    [self.layer addSublayer:self.separatorLayer];
 }
 
 - (void)updateFrame {
@@ -54,8 +54,8 @@
     UIBezierPath *path = [UIBezierPath bezierPath];
     [path moveToPoint:CGPointMake(self.bounds.size.width - 1, 0)];
     [path addLineToPoint:CGPointMake(self.bounds.size.width - 1, self.bounds.size.height)];
-    path.lineWidth = 1;
-    self.verticalDivideLineLayer.path = path.CGPath;
+
+    self.separatorLayer.path = path.CGPath;
 }
 
 #pragma mark - Setter
@@ -76,13 +76,13 @@
     return _label;
 }
 
-- (CAShapeLayer *)verticalDivideLineLayer {
-    if (!_verticalDivideLineLayer) {
-        _verticalDivideLineLayer = [CAShapeLayer layer];
-        _verticalDivideLineLayer.strokeColor = [UIColor lightGrayColor].CGColor;
-        _verticalDivideLineLayer.opacity = 0.5;
+- (CAShapeLayer *)separatorLayer {
+    if (!_separatorLayer) {
+        _separatorLayer = [CAShapeLayer layer];
+        _separatorLayer.strokeColor = [UIColor lightGrayColor].CGColor;
+        _separatorLayer.lineWidth = 0.5;
     }
-    return _verticalDivideLineLayer;
+    return _separatorLayer;
 }
 
 @end

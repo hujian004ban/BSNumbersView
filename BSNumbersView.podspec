@@ -15,8 +15,8 @@ Pod::Spec.new do |s|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  s.name         = "BSNumbers"
-  s.version      = "0.1.1"
+  s.name         = "BSNumbersView"
+  s.version      = "0.1.3"
   s.summary      = "A view that display form just like numbers"
 
   # This description is used to generate tags and improve search results.
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
                   用于实现类似mac的numbers（windows的excel）功能的表格视图，具备的特性包括冻结列、自动计算宽度以及快速设置数据源
                    DESC
 
-  s.homepage     = "https://github.com/blurryssky/BSNumbers"
+  s.homepage     = "https://github.com/blurryssky/BSNumbersView"
   # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -80,7 +80,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/blurryssky/BSNumbers.git", :tag => "0.0.4" }
+  s.source       = { :git => "https://github.com/blurryssky/BSNumbersView.git", :tag => "0.1.3" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -91,8 +91,8 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "BSNumbers", "BSNumbersSample/BSNumbers/*"
-  s.exclude_files = "Classes/Exclude"
+  s.source_files  = "BSNumbersView", "BSNumbersSample/BSNumbersView/*"
+  s.exclude_files = "Classes/"
 
   # s.public_header_files = "Classes/**/*.h"
 

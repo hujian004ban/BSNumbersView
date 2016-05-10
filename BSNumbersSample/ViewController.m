@@ -33,6 +33,8 @@
         [flights addObject:flight];
     }
     
+    self.numbersView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    self.numbersView.layer.borderWidth = 0.5;
     self.numbersView.delegate = self;
     
     self.numbersView.bodyData = flights;
@@ -48,28 +50,31 @@
 
 - (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath {
     
-    CGSize size = [numbersView sizeForFreezeAtColumn:indexPath.row];
-    NSString *text = [numbersView textForBodyFreezeAtIndexPath:indexPath];
-    
-    UIView *view = [UIView new];
-    view.backgroundColor = [UIColor lightGrayColor];
-    
-    UIView *square = [UIView new];
-    square.backgroundColor = [UIColor orangeColor];
-    square.frame = CGRectMake(0, 0, 15, 15);
-    square.center = CGPointMake(size.width/2 - 35, size.height/2);
-    [view addSubview:square];
-    
-    UILabel *label = [UILabel new];
-    label.text = text;
-    label.textColor = [UIColor whiteColor];
-    label.font = [UIFont systemFontOfSize:14];
-    label.frame = CGRectMake(0, 0, 100, 100);
-    label.center = CGPointMake(size.width/2 + 10, size.height/2);
-    label.textAlignment = NSTextAlignmentCenter;
-    [view addSubview:label];
-    
-    return view;
+    if (indexPath.row == 0) {
+        CGSize size = [numbersView sizeForFreezeAtColumn:indexPath.row];
+        NSString *text = [numbersView textForBodyFreezeAtIndexPath:indexPath];
+        
+        UIView *view = [UIView new];
+        view.backgroundColor = [UIColor lightGrayColor];
+        
+        UIView *square = [UIView new];
+        square.backgroundColor = [UIColor orangeColor];
+        square.frame = CGRectMake(0, 0, 15, 15);
+        square.center = CGPointMake(size.width/2 - 35, size.height/2);
+        [view addSubview:square];
+        
+        UILabel *label = [UILabel new];
+        label.text = text;
+        label.textColor = [UIColor whiteColor];
+        label.font = [UIFont systemFontOfSize:14];
+        label.frame = CGRectMake(0, 0, 100, 100);
+        label.center = CGPointMake(size.width/2 + 10, size.height/2);
+        label.textAlignment = NSTextAlignmentCenter;
+        [view addSubview:label];
+        
+        return view;
+    }
+    return nil;
 }
 
 - (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodySlideAtIndexPath:(NSIndexPath *)indexPath {

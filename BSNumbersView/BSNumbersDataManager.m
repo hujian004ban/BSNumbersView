@@ -85,6 +85,8 @@
 
     NSInteger columnsCount = self.flatData.firstObject.count;
     
+    _freezeWidth = 0;
+    _slideWidth = 0;
     //遍历列
     for (NSInteger i = 0; i < columnsCount; i ++) {
         
