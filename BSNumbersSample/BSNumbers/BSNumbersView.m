@@ -143,44 +143,44 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
         
         self.headerFreezeCollectionView.frame = CGRectMake(0,
                                                            0,
-                                                           self.dataManager.freezeCollectionViewWidth ,
+                                                           self.dataManager.freezeWidth ,
                                                            headerHeight);
         self.freezeCollectionView.frame = CGRectMake(0,
                                                      headerHeight,
-                                                     self.dataManager.freezeCollectionViewWidth,
+                                                     self.dataManager.freezeWidth,
                                                      height - headerHeight);
         
-        self.slideScrollView.frame = CGRectMake(self.dataManager.freezeCollectionViewWidth,
+        self.slideScrollView.frame = CGRectMake(self.dataManager.freezeWidth,
                                                   0,
-                                                  width - self.dataManager.freezeCollectionViewWidth,
+                                                  width - self.dataManager.freezeWidth,
                                                   height);
-        self.slideScrollView.contentSize = CGSizeMake(self.dataManager.slideCollectionViewWidth,
+        self.slideScrollView.contentSize = CGSizeMake(self.dataManager.slideWidth,
                                                         height);
         
         self.headerSlideCollectionView.frame = CGRectMake(0,
                                                             0,
-                                                            self.dataManager.slideCollectionViewWidth,
+                                                            self.dataManager.slideWidth,
                                                             headerHeight);
         self.slideCollectionView.frame = CGRectMake(0,
                                                       headerHeight,
-                                                      self.dataManager.slideCollectionViewWidth,
+                                                      self.dataManager.slideWidth,
                                                       height - headerHeight);
         
     } else {
         
         self.freezeCollectionView.frame = CGRectMake(0,
                                                      0,
-                                                     self.dataManager.freezeCollectionViewWidth,
+                                                     self.dataManager.freezeWidth,
                                                      height);
-        self.slideScrollView.frame = CGRectMake(self.dataManager.freezeCollectionViewWidth,
+        self.slideScrollView.frame = CGRectMake(self.dataManager.freezeWidth,
                                                   0,
-                                                  width - self.dataManager.freezeCollectionViewWidth,
+                                                  width - self.dataManager.freezeWidth,
                                                   height);
-        self.slideScrollView.contentSize = CGSizeMake(self.dataManager.slideCollectionViewWidth,
+        self.slideScrollView.contentSize = CGSizeMake(self.dataManager.slideWidth,
                                                         height);
         self.slideCollectionView.frame = CGRectMake(0,
                                                       0,
-                                                      self.dataManager.slideCollectionViewWidth,
+                                                      self.dataManager.slideWidth,
                                                       height);
     }
 
@@ -231,14 +231,30 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     [self.slideCollectionView reloadData];
 }
 
-- (CGSize)sizeForFreezeColumn:(NSInteger)column {
-    CGSize size = CGSizeFromString(self.dataManager.freezeCollectionViewColumnsItemSize[column]);
+- (CGSize)sizeForFreezeAtColumn:(NSInteger)column {
+    CGSize size = CGSizeFromString(self.dataManager.freezeItemSize[column]);
     return size;
 }
 
-- (CGSize)sizeForSlideColumn:(NSInteger)column {
-    CGSize size = CGSizeFromString(self.dataManager.slideCollectionViewColumnsItemSize[column]);
+- (CGSize)sizeForSlideAtColumn:(NSInteger)column {
+    CGSize size = CGSizeFromString(self.dataManager.slideItemSize[column]);
     return size;
+}
+
+- (NSString *)textForHeaderFreezeAtColumn:(NSInteger)column {
+    return self.dataManager.headerFreezeData[column];
+}
+
+- (NSString *)textForHeaderSlideAtColumn:(NSInteger)column {
+    return self.dataManager.headerSlideData[column];
+}
+
+- (NSString *)textForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath {
+    return self.dataManager.bodyFreezeData[indexPath.section][indexPath.row];
+}
+
+- (NSString *)textForBodySlideAtIndexPath:(NSIndexPath *)indexPath {
+    return self.dataManager.bodySlideData[indexPath.section][indexPath.row];
 }
 
 #pragma mark - Setter
@@ -389,7 +405,8 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 }
 
 - (BOOL)didImplementation:(SEL)aSelector {
-    if ([self.delegate conformsToProtocol:@protocol(BSNumbersViewDelegate)]) {
+    
+    if (self.delegate && [self.delegate conformsToProtocol:@protocol(BSNumbersViewDelegate)]) {
         if ([self.delegate respondsToSelector:aSelector]) {
             return YES;
         }
@@ -398,38 +415,83 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     return NO;
 }
 
-#pragma mark - CellConfiguration
+- (void)useCustomView:(UIView *)customView inCell:(BSNumbersCollectionCell *)cell {
+    
+    cell.label.text = @"";
+    customView.frame = cell.bounds;
+    [customView removeFromSuperview];
+    [cell addSubview:customView];
+}
+
+#pragma mark - Cell Configuration
 
 - (void)configureHeaderFreezeCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSString *text = self.dataManager.headerFreezeCollectionViewFlatData[indexPath.row];
+    NSString *text = self.dataManager.headerFreezeData[indexPath.row];
+    cell.label.text = text;
+    
+    if ([self didImplementation:@selector(numbersView:viewForHeaderFreezeAtColumn:)]) {
+        UIView *customView = [self.delegate numbersView:self viewForHeaderFreezeAtColumn:indexPath.row];
+        if (customView) {
+            [self useCustomView:customView inCell:cell];
+            return;
+        }
+    }
+    
+    if ([self didImplementation:@selector(numbersView:attributedStringForHeaderFreezeAtColumn:)]) {
+        NSAttributedString *attributedString = [self.delegate numbersView:self attributedStringForHeaderFreezeAtColumn:indexPath.row];
+        if (attributedString) {
+            cell.label.attributedText = attributedString;
+            return;
+        }
+    }
     
     cell.label.textColor = self.headerTextColor;
     cell.backgroundColor = self.headerBackgroundColor;
     cell.label.font = self.headerFont;
-    cell.label.text = text;
 }
 
 - (void)configureHeaderSlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSString *text = self.dataManager.headerSlideCollectionViewFlatData[indexPath.row];
+    NSString *text = self.dataManager.headerSlideData[indexPath.row];
+    cell.label.text = text;
+    
+    if ([self didImplementation:@selector(numbersView:viewForHeaderSlideAtColumn:)]) {
+        UIView *customView = [self.delegate numbersView:self viewForHeaderSlideAtColumn:indexPath.row];
+        if (customView) {
+            [self useCustomView:customView inCell:cell];
+            return;
+        }
+    }
+    
+    if ([self didImplementation:@selector(numbersView:attributedStringForHeaderSlideAtColumn:)]) {
+        NSAttributedString *attributedString = [self.delegate numbersView:self attributedStringForHeaderSlideAtColumn:indexPath.row];
+        if (attributedString) {
+            cell.label.attributedText = attributedString;
+            return;
+        }
+    }
     
     cell.label.textColor = self.headerTextColor;
     cell.backgroundColor = self.headerBackgroundColor;
     cell.label.font = self.headerFont;
-    cell.label.text = text;
 }
 
 - (void)configureBodyFreezeCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
 
-    NSString *text = self.dataManager.freezeCollectionViewFlatData[indexPath.section][indexPath.row];
+    NSString *text = self.dataManager.bodyFreezeData[indexPath.section][indexPath.row];
+    cell.label.text = text;
     
-    if ([self didImplementation:@selector(numbersView:viewForBodyFreezeInColumn:text:)]) {
-        UIView *customView = [self.delegate numbersView:self viewForBodyFreezeInColumn:indexPath.row text:text];
+    if ([self didImplementation:@selector(numbersView:viewForBodyFreezeAtIndexPath:)]) {
+        UIView *customView = [self.delegate numbersView:self viewForBodyFreezeAtIndexPath:indexPath];
         if (customView) {
-            cell.label.text = @"";
-            customView.frame = cell.bounds;
-            [customView removeFromSuperview];
-            [cell addSubview:customView];
-            
+            [self useCustomView:customView inCell:cell];
+            return;
+        }
+    }
+    
+    if ([self didImplementation:@selector(numbersView:attributedStringForBodyFreezeAtIndexPath:)]) {
+        NSAttributedString *attributedString = [self.delegate numbersView:self attributedStringForBodyFreezeAtIndexPath:indexPath];
+        if (attributedString) {
+            cell.label.attributedText = attributedString;
             return;
         }
     }
@@ -437,21 +499,24 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     cell.label.textColor = self.freezeBodyTextColor;
     cell.backgroundColor = self.freezeBodyBackgroundColor;
     cell.label.font = self.freezeBodyFont;
-    cell.label.text = text;
-    
 }
 
 - (void)configureBodySlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSString *text = self.dataManager.slideCollectionViewFlatData[indexPath.section][indexPath.row];
+    NSString *text = self.dataManager.bodySlideData[indexPath.section][indexPath.row];
+    cell.label.text = text;
     
-    if ([self didImplementation:@selector(numbersView:viewForBodySlideInColumn:text:)]) {
-        UIView *customView = [self.delegate numbersView:self viewForBodySlideInColumn:indexPath.row text: text];
+    if ([self didImplementation:@selector(numbersView:viewForBodySlideAtIndexPath:)]) {
+        UIView *customView = [self.delegate numbersView:self viewForBodySlideAtIndexPath:indexPath];
         if (customView) {
-            cell.label.text = @"";
-            customView.frame = cell.bounds;
-            [customView removeFromSuperview];
-            [cell addSubview:customView];
-            
+            [self useCustomView:customView inCell:cell];
+            return;
+        }
+    }
+    
+    if ([self didImplementation:@selector(numbersView:attributedStringForBodySlideAtIndexPath:)]) {
+        NSAttributedString *attributedString = [self.delegate numbersView:self attributedStringForBodySlideAtIndexPath:indexPath];
+        if (attributedString) {
+            cell.label.attributedText = attributedString;
             return;
         }
     }
@@ -459,7 +524,6 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     cell.label.textColor = self.slideBodyTextColor;
     cell.backgroundColor = self.slideBodyBackgroundColor;
     cell.label.font = self.slideBodyFont;
-    cell.label.text = text;
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -540,10 +604,10 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
         if (collectionView == self.headerFreezeCollectionView ||
             collectionView == self.freezeCollectionView) {
 
-            return CGSizeFromString(self.dataManager.freezeCollectionViewColumnsItemSize[indexPath.row]);
+            return CGSizeFromString(self.dataManager.freezeItemSize[indexPath.row]);
         } else {
             
-            return CGSizeFromString(self.dataManager.slideCollectionViewColumnsItemSize[indexPath.row]);
+            return CGSizeFromString(self.dataManager.slideItemSize[indexPath.row]);
         }
     }
 }

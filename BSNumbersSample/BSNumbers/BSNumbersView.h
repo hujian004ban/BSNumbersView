@@ -15,9 +15,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeInColumn:(NSInteger)column text:(NSString *)text;
+- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
+     attributedStringForHeaderFreezeAtColumn:(NSInteger)column;
 
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodySlideInColumn:(NSInteger)column text:(NSString *)text;;
+- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
+      attributedStringForHeaderSlideAtColumn:(NSInteger)column;
+
+- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath;
+
+- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodySlideAtIndexPath:(NSIndexPath *)indexPath;
+
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForHeaderFreezeAtColumn:(NSInteger)column;
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForHeaderSlideAtColumn:(NSInteger)column;
+
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath;
+
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodySlideAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
@@ -72,8 +85,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic) NSArray<NSObject *> *bodyData;
 
 
-- (CGSize)sizeForFreezeColumn:(NSInteger )column;
-- (CGSize)sizeForSlideColumn:(NSInteger )column;
+- (NSString *)textForHeaderFreezeAtColumn:(NSInteger )column;
+- (NSString *)textForHeaderSlideAtColumn:(NSInteger )column;
+
+- (NSString *)textForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath;
+- (NSString *)textForBodySlideAtIndexPath:(NSIndexPath *)indexPath;
+
+- (CGSize)sizeForFreezeAtColumn:(NSInteger )column;
+- (CGSize)sizeForSlideAtColumn:(NSInteger )column;
 
 - (void)reloadData;
 

@@ -23,16 +23,16 @@
 
 - (void)caculate;
 
-@property (strong, nonatomic, readonly) NSArray<NSString *> *headerFreezeCollectionViewFlatData;
-@property (strong, nonatomic, readonly) NSArray<NSString *> *headerSlideCollectionViewFlatData;
+@property (strong, nonatomic, readonly) NSArray<NSString *> *headerFreezeData;
+@property (strong, nonatomic, readonly) NSArray<NSString *> *headerSlideData;
 
-@property (strong, nonatomic, readonly) NSArray<NSArray<NSString *> *> *freezeCollectionViewFlatData;
-@property (strong, nonatomic, readonly) NSArray<NSArray<NSString *> *> *slideCollectionViewFlatData;
+@property (strong, nonatomic, readonly) NSArray<NSArray<NSString *> *> *bodyFreezeData;
+@property (strong, nonatomic, readonly) NSArray<NSArray<NSString *> *> *bodySlideData;
 
-@property (assign, nonatomic, readonly) CGFloat freezeCollectionViewWidth;
-@property (assign, nonatomic, readonly) CGFloat slideCollectionViewWidth;
+@property (assign, nonatomic, readonly) CGFloat freezeWidth;
+@property (assign, nonatomic, readonly) CGFloat slideWidth;
 
-@property (strong, nonatomic, readonly) NSArray<NSString *> *freezeCollectionViewColumnsItemSize;
-@property (strong, nonatomic, readonly) NSArray<NSString *> *slideCollectionViewColumnsItemSize;
+@property (strong, nonatomic, readonly) NSArray<NSString *> *freezeItemSize;
+@property (strong, nonatomic, readonly) NSArray<NSString *> *slideItemSize;
 
 @end

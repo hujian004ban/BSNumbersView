@@ -46,8 +46,10 @@
 
 #pragma mark -- BSNumbersViewDelegate
 
-- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeInColumn:(NSInteger)column text:(NSString *)text {
-    CGSize size = [numbersView sizeForFreezeColumn:column];
+- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath {
+    
+    CGSize size = [numbersView sizeForFreezeAtColumn:indexPath.row];
+    NSString *text = [numbersView textForBodyFreezeAtIndexPath:indexPath];
     
     UIView *view = [UIView new];
     view.backgroundColor = [UIColor lightGrayColor];
@@ -70,9 +72,19 @@
     return view;
 }
 
-- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodySlideInColumn:(NSInteger)column text:(NSString *)text {
+- (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodySlideAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == 0) {
+        NSString *text = [numbersView textForBodySlideAtIndexPath:indexPath];
+        NSMutableAttributedString *string = [[NSMutableAttributedString alloc]initWithString:text];
+        
+        [string addAttributes:@{NSForegroundColorAttributeName: [UIColor redColor],
+                                NSFontAttributeName: [UIFont systemFontOfSize:11]} range:NSMakeRange(0, 2)];
+        [string addAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:19]} range:NSMakeRange(2, text.length - 2)];
+        return string;
+    }
     return nil;
 }
+
 
 
 @end

@@ -41,8 +41,8 @@
 }
 
 - (void)configureFlatData {
-    NSMutableArray *freezeCollectionViewFlatData = @[].mutableCopy;
-    NSMutableArray *slideCollectionViewFlatData = @[].mutableCopy;
+    NSMutableArray *bodyFreezeData = @[].mutableCopy;
+    NSMutableArray *bodySlideData = @[].mutableCopy;
     
     for (NSInteger i = 0; i < self.flatData.count; i ++) {
         
@@ -61,27 +61,27 @@
                 [slideCollectionViewSectionFlatData addObject:value];
             }
         }
-        [freezeCollectionViewFlatData addObject:freezeCollectionViewSectionFlatData];
-        [slideCollectionViewFlatData addObject:slideCollectionViewSectionFlatData];
+        [bodyFreezeData addObject:freezeCollectionViewSectionFlatData];
+        [bodySlideData addObject:slideCollectionViewSectionFlatData];
         
     }
     
     if (self.headerData) {
-        _headerFreezeCollectionViewFlatData = freezeCollectionViewFlatData.firstObject;
-        _headerSlideCollectionViewFlatData = slideCollectionViewFlatData.firstObject;
+        _headerFreezeData = bodyFreezeData.firstObject;
+        _headerSlideData = bodySlideData.firstObject;
         
-        _freezeCollectionViewFlatData = [freezeCollectionViewFlatData subarrayWithRange:NSMakeRange(1, freezeCollectionViewFlatData.count - 1)];
-        _slideCollectionViewFlatData = [slideCollectionViewFlatData subarrayWithRange:NSMakeRange(1, freezeCollectionViewFlatData.count - 1)];
+        _bodyFreezeData = [bodyFreezeData subarrayWithRange:NSMakeRange(1, bodyFreezeData.count - 1)];
+        _bodySlideData = [bodySlideData subarrayWithRange:NSMakeRange(1, bodyFreezeData.count - 1)];
     } else {
-        _freezeCollectionViewFlatData = freezeCollectionViewFlatData.copy;
-        _slideCollectionViewFlatData = slideCollectionViewFlatData.copy;
+        _bodyFreezeData = bodyFreezeData.copy;
+        _bodySlideData = bodySlideData.copy;
     }
 
 }
 
 - (void)caculateWidths {
-    NSMutableArray<NSString *> *freezeCollectionViewColumnsItemSize = @[].mutableCopy;
-    NSMutableArray<NSString *> *slideCollectionViewColumnsItemSize = @[].mutableCopy;
+    NSMutableArray<NSString *> *freezeItemSize = @[].mutableCopy;
+    NSMutableArray<NSString *> *slideItemSize = @[].mutableCopy;
 
     NSInteger columnsCount = self.flatData.firstObject.count;
     
@@ -110,16 +110,16 @@
         }
         
         if (i < self.freezeColumn) {
-            [freezeCollectionViewColumnsItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
-            _freezeCollectionViewWidth += columnMaxWidth;
+            [freezeItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
+            _freezeWidth += columnMaxWidth;
         } else {
-            [slideCollectionViewColumnsItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
-            _slideCollectionViewWidth += columnMaxWidth;
+            [slideItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
+            _slideWidth += columnMaxWidth;
         }
     }
     
-    _freezeCollectionViewColumnsItemSize = freezeCollectionViewColumnsItemSize.copy;
-    _slideCollectionViewColumnsItemSize = slideCollectionViewColumnsItemSize.copy;
+    _freezeItemSize = freezeItemSize.copy;
+    _slideItemSize = slideItemSize.copy;
 }
 
 #pragma mark - Public
