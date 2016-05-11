@@ -113,10 +113,10 @@
         }
         
         if (i < self.freezeColumn) {
-            [freezeItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
+            [freezeItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight - 1))];
             _freezeWidth += columnMaxWidth;
         } else {
-            [slideItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight))];
+            [slideItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight - 1))];
             _slideWidth += columnMaxWidth;
         }
     }
