@@ -15,7 +15,7 @@
 
 - (void)setupFlatData;
 
-- (void)configureFlatData;
+- (void)configureData;
 - (void)caculateWidths;
 
 @end
@@ -40,7 +40,7 @@
     self.flatData = flatData.copy;
 }
 
-- (void)configureFlatData {
+- (void)configureData {
     NSMutableArray *bodyFreezeData = @[].mutableCopy;
     NSMutableArray *bodySlideData = @[].mutableCopy;
     
@@ -83,10 +83,11 @@
     NSMutableArray<NSString *> *freezeItemSize = @[].mutableCopy;
     NSMutableArray<NSString *> *slideItemSize = @[].mutableCopy;
 
-    NSInteger columnsCount = self.flatData.firstObject.count;
-    
     _freezeWidth = 0;
     _slideWidth = 0;
+    
+    NSInteger columnsCount = self.flatData.firstObject.count;
+    
     //遍历列
     for (NSInteger i = 0; i < columnsCount; i ++) {
         
@@ -108,7 +109,7 @@
                 columnMaxWidth = targetWidth;
             }
             
-            columnMaxWidth = MAX(self.minItemWidth, MIN(self.maxItemWidth, columnMaxWidth));
+            columnMaxWidth = floor(MAX(self.minItemWidth, MIN(self.maxItemWidth, columnMaxWidth)));
         }
         
         if (i < self.freezeColumn) {
@@ -127,7 +128,7 @@
 #pragma mark - Public
 
 - (void)caculate {
-    [self configureFlatData];
+    [self configureData];
     [self caculateWidths];
 }
 

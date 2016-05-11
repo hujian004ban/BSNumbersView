@@ -33,15 +33,19 @@
         [flights addObject:flight];
     }
     
-    self.numbersView.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.numbersView.layer.borderWidth = 0.5;
-    self.numbersView.delegate = self;
+    
     
     self.numbersView.bodyData = flights;
     
+    //optional
     self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
     self.numbersView.freezeColumn = 1;
     self.numbersView.slideBodyFont = [UIFont systemFontOfSize:14];
+    
+    self.numbersView.delegate = self;
+    
+    self.numbersView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    self.numbersView.layer.borderWidth = 0.5;
     
     [self.numbersView reloadData];
 }
