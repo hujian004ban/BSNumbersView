@@ -108,7 +108,7 @@
                 columnMaxWidth = targetWidth;
             }
             
-            columnMaxWidth = MAX(self.minItemWidth, MIN(self.maxItemWidth, columnMaxWidth));
+            columnMaxWidth = floor(MAX(self.minItemWidth, MIN(self.maxItemWidth, columnMaxWidth)));
         }
         
         if (i < self.freezeColumn) {
