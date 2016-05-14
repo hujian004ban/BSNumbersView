@@ -1,14 +1,14 @@
-# BSNumbers
+# BSNumbersView
 
 ## Overview
 
 if the view did not add constraints, you need to rotate the view manually when screen's orientation changed.
 
-![BSNumbersGIF.gif](https://github.com/blurryssky/BSNumbers/blob/master/Screenshots/BSNumbersGIF.gif)
+![BSNumbersViewGIF.gif](https://github.com/blurryssky/BSNumbers/blob/master/Screenshots/BSNumbersGIF.gif)
 
 ## Installation
 
-> pod 'BSNumbers', '~> 0.1.0'
+> pod 'BSNumbersView', '~> 0.1.6'
 
 ## Usage
 
