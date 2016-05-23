@@ -8,8 +8,6 @@ if the view did not add constraints, you need to rotate the view manually when s
 
 ## Installation
 
-> use_frameworks!
-
 > pod 'BSNumbersView'
 
 ## Usage
