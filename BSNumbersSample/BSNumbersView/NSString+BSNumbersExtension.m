@@ -10,7 +10,7 @@
 
 @implementation NSString (BSNumbersExtension)
 
-- (CGSize)sizeWithFont:(UIFont *)font constraint:(CGSize)constraint {
+- (CGSize)bs_sizeWithFont:(UIFont *)font constraint:(CGSize)constraint {
     CGSize size;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
     NSStringDrawingOptions options = NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin;
@@ -18,7 +18,7 @@
     CGRect bounds = [self boundingRectWithSize:constraint options:options attributes:attributes context:nil];
     size = bounds.size;
 #else
-    size = [self sizeWithFont:font constrainedToSize:constraint lineBreakMode:NSLineBreakByCharWrapping];
+    size = [self bs_sizeWithFont:font constrainedToSize:constraint lineBreakMode:NSLineBreakByCharWrapping];
 #endif
     return size;
 }

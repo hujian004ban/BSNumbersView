@@ -9,7 +9,6 @@
 #import "ViewController.h"
 #import "Flight.h"
 #import "BSNumbersView.h"
-#import "NSObject+BSNumbersExtension.h"
 
 @interface ViewController () <BSNumbersViewDelegate>
 
@@ -33,14 +32,15 @@
         [flights addObject:flight];
     }
     
-    
-    
     self.numbersView.bodyData = flights;
     
     //optional
     self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
     self.numbersView.freezeColumn = 1;
     self.numbersView.slideBodyFont = [UIFont systemFontOfSize:14];
+//    self.numbersView.horizontalSeparatorStyle = BSNumbersSeparatorStyleReal;
+//    self.numbersView.horizontalSeparatorColor = [UIColor redColor];
+//    self.numbersView.verticalSeparatorColor = [UIColor greenColor];
     
     self.numbersView.delegate = self;
     
@@ -52,11 +52,11 @@
 
 #pragma mark -- BSNumbersViewDelegate
 
-- (UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath {
+- (UIView *)numbersView:(BSNumbersView *)numbersView viewAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (indexPath.row == 0) {
-        CGSize size = [numbersView sizeForFreezeAtColumn:indexPath.row];
-        NSString *text = [numbersView textForBodyFreezeAtIndexPath:indexPath];
+    if (indexPath.row == 0 && indexPath.section != 0) {
+        CGSize size = [numbersView sizeForRow:indexPath.row];
+        NSString *text = [numbersView textAtIndexPath:indexPath];
         
         UIView *view = [UIView new];
         view.backgroundColor = [UIColor lightGrayColor];
@@ -81,9 +81,9 @@
     return nil;
 }
 
-- (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodySlideAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 0) {
-        NSString *text = [numbersView textForBodySlideAtIndexPath:indexPath];
+- (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row == 1 && indexPath.section != 0) {
+        NSString *text = [numbersView textAtIndexPath:indexPath];
         NSMutableAttributedString *string = [[NSMutableAttributedString alloc]initWithString:text];
         
         [string addAttributes:@{NSForegroundColorAttributeName: [UIColor redColor],
@@ -94,6 +94,9 @@
     return nil;
 }
 
+- (void)numbersView:(BSNumbersView *)numbersView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"section = %ld, row = %ld", (long)indexPath.section, (long)indexPath.row);
+}
 
 
 @end

@@ -7,13 +7,12 @@
 //
 
 #import "BSNumbersDataManager.h"
+#import "BSNumbersView.h"
 #import "NSObject+BSNumbersExtension.h"
 #import "NSString+BSNumbersExtension.h"
 @interface BSNumbersDataManager ()
 
 @property (strong, nonatomic) NSArray<NSArray<NSString *> *> *flatData;
-
-- (void)setupFlatData;
 
 - (void)configureData;
 - (void)caculateWidths;
@@ -29,12 +28,12 @@
 
 - (void)setupFlatData {
     NSMutableArray *flatData = @[].mutableCopy;
-    if (self.headerData) {
-        [flatData addObject:self.headerData];
+    if (self.numbersView.headerData) {
+        [flatData addObject:self.numbersView.headerData];
     }
-    if (self.bodyData) {
-        for (NSObject *bodyData in self.bodyData) {
-            [flatData addObject:[bodyData getPropertiesValues]];
+    if (self.numbersView.bodyData) {
+        for (NSObject *bodyData in self.numbersView.bodyData) {
+            [flatData addObject:[bodyData bs_values]];
         }
     }
     self.flatData = flatData.copy;
@@ -55,7 +54,7 @@
             
             NSString *value = flatData[j];
             
-            if (j < self.freezeColumn) {
+            if (j < self.numbersView.freezeColumn) {
                 [freezeCollectionViewSectionFlatData addObject:value];
             } else {
                 [slideCollectionViewSectionFlatData addObject:value];
@@ -66,7 +65,7 @@
         
     }
     
-    if (self.headerData) {
+    if (self.numbersView.headerData) {
         _headerFreezeData = bodyFreezeData.firstObject;
         _headerSlideData = bodySlideData.firstObject;
         
@@ -98,25 +97,25 @@
             
             NSString *columnValue = self.flatData[j][i];
             
-            CGSize size = [columnValue sizeWithFont:self.slideBodyFont constraint:CGSizeMake(self.maxItemWidth, self.itemHeight)];
+            CGSize size = [columnValue bs_sizeWithFont:self.numbersView.slideBodyFont constraint:CGSizeMake(self.numbersView.itemMaxWidth, self.numbersView.itemHeight)];
             if (j == 0) {
-                size = [columnValue sizeWithFont:self.headerFont constraint:CGSizeMake(self.maxItemWidth, self.itemHeight)];
+                size = [columnValue bs_sizeWithFont:self.numbersView.headerFont constraint:CGSizeMake(self.numbersView.itemMaxWidth, self.numbersView.itemHeight)];
             }
             
-            CGFloat targetWidth = size.width + 2 * self.itemTextHorizontalMargin;
+            CGFloat targetWidth = size.width + 2 * self.numbersView.horizontalItemTextMargin;
             
             if (targetWidth >= columnMaxWidth) {
                 columnMaxWidth = targetWidth;
             }
             
-            columnMaxWidth = floor(MAX(self.minItemWidth, MIN(self.maxItemWidth, columnMaxWidth)));
+            columnMaxWidth = floor(MAX(self.numbersView.itemMinWidth, MIN(self.numbersView.itemMaxWidth, columnMaxWidth)));
         }
         
-        if (i < self.freezeColumn) {
-            [freezeItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight - 1))];
+        if (i < self.numbersView.freezeColumn) {
+            [freezeItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.numbersView.itemHeight - 1))];
             _freezeWidth += columnMaxWidth;
         } else {
-            [slideItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.itemHeight - 1))];
+            [slideItemSize addObject:NSStringFromCGSize(CGSizeMake(columnMaxWidth, self.numbersView.itemHeight - 1))];
             _slideWidth += columnMaxWidth;
         }
     }
@@ -132,19 +131,4 @@
     [self caculateWidths];
 }
 
-#pragma mark - Setter
-
-- (void)setHeaderData:(NSArray<NSString *> *)headerData {
-    _headerData = headerData;
-    
-    [self setupFlatData];
-}
-
-- (void)setBodyData:(NSArray<NSObject *> *)bodyData {
-    _bodyData = bodyData;
-    
-    [self setupFlatData];
-}
-
-#pragma mark - Getter
 @end

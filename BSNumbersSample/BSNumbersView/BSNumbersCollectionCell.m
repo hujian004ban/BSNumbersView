@@ -39,10 +39,15 @@
     [self updateFrame];
 }
 
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    [self.customView removeFromSuperview];
+}
+
 #pragma mark - Private
 - (void)setup {
-    [self addSubview:self.label];
-    [self.layer addSublayer:self.separatorLayer];
+    [self.contentView addSubview:self.label];
+    [self.contentView.layer addSublayer:self.separatorLayer];
 }
 
 - (void)updateFrame {
@@ -60,9 +65,41 @@
 
 #pragma mark - Setter
 - (void)setHorizontalMargin:(CGFloat)horizontalMargin {
-    _horizontalMargin = horizontalMargin;
+    if (_horizontalMargin != horizontalMargin) {
+        _horizontalMargin = horizontalMargin;
+        [self updateFrame];
+    }
+}
+
+- (void)setSeparatorHidden:(BOOL)separatorHidden {
     
-    [self updateFrame];
+    if (_separatorHidden != separatorHidden) {
+        _separatorHidden = separatorHidden;
+        
+        [CATransaction begin];
+        [CATransaction setDisableActions:YES];
+        self.separatorLayer.hidden = separatorHidden;
+        [CATransaction commit];
+    }
+}
+
+- (void)setSeparatorColor:(UIColor *)separatorColor {
+    
+    if (_separatorColor != separatorColor) {
+        _separatorColor = separatorColor;
+        
+        self.separatorLayer.strokeColor = separatorColor.CGColor;
+    }
+}
+
+- (void)setCustomView:(UIView *)customView {
+    if (_customView != customView) {
+        _customView = customView;
+        
+        customView.frame = self.bounds;
+        [self.contentView insertSubview:customView atIndex:0];
+        self.label.text = @"";
+    }
 }
 
 #pragma mark - Getter

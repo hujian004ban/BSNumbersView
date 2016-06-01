@@ -10,6 +10,6 @@
 
 @interface NSString (BSNumbersExtension)
 
-- (CGSize)sizeWithFont:(UIFont *)font constraint:(CGSize)constraint;
+- (CGSize)bs_sizeWithFont:(UIFont *)font constraint:(CGSize)constraint;
 
 @end

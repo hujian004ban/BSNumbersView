@@ -6,16 +6,11 @@
 //  Copyright © 2016年 blurryssky. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSUInteger, BSNumbersLineStyle) {
-    BSNumbersLineStyleNone,
-    BSNumbersLineStyleReal,
-    BSNumbersLineStyleDotted
-};
+#import "BSNumbersView.h"
 
 @interface BSNumbersCollectionFooterView : UICollectionReusableView
 
-@property (assign, nonatomic) BSNumbersLineStyle lineStyle;
+@property (assign, nonatomic) BSNumbersSeparatorStyle separatorStyle;
+@property (strong, nonatomic) UIColor *separatorColor;
 
 @end

@@ -37,21 +37,30 @@
     
 }
 
-- (void)setLineStyle:(BSNumbersLineStyle)lineStyle {
-    _lineStyle = lineStyle;
-    
-    if (lineStyle == BSNumbersLineStyleNone) {
-        return;
+- (void)setSeparatorStyle:(BSNumbersSeparatorStyle)separatorStyle {
+    if (_separatorStyle != separatorStyle) {
+        _separatorStyle = separatorStyle;
+        
+        self.lineLayer.hidden = NO;
+        [self layoutIfNeeded];
+        if (separatorStyle == BSNumbersSeparatorStyleNone) {
+            self.lineLayer.hidden = YES;
+        } else if (separatorStyle == BSNumbersSeparatorStyleDotted) {
+            [self.lineLayer setLineDashPattern:@[@2]];
+        } else {
+            [self.lineLayer setLineDashPattern:nil];
+        }
     }
     
-    [self layoutIfNeeded];
+}
+
+- (void)setSeparatorColor:(UIColor *)separatorColor {
     
-    if (lineStyle == BSNumbersLineStyleDotted) {
-        [self.lineLayer setLineDashPattern:@[@2]];
-    } else {
-        [self.lineLayer setLineDashPattern:nil];
+    if (_separatorColor != separatorColor) {
+        _separatorColor = separatorColor;
+        
+        self.lineLayer.strokeColor = separatorColor.CGColor;
     }
-    
 }
 
 - (CAShapeLayer *)lineLayer {

@@ -7,21 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
+@class BSNumbersView;
 
 @interface BSNumbersDataManager : NSObject
 
-@property (assign, nonatomic) CGFloat minItemWidth;
-@property (assign, nonatomic) CGFloat maxItemWidth;
-@property (assign, nonatomic) CGFloat itemHeight;
-@property (assign, nonatomic) CGFloat itemTextHorizontalMargin;
-@property (assign, nonatomic) NSInteger freezeColumn;
-@property (assign, nonatomic) UIFont *headerFont;
-@property (assign, nonatomic) UIFont *slideBodyFont;
-
-@property (strong, nonatomic) NSArray<NSString *> *headerData;
-@property (strong, nonatomic) NSArray<NSObject *> *bodyData;
+@property (weak, nonatomic) BSNumbersView *numbersView;
 
 - (void)caculate;
+- (void)setupFlatData;
 
 @property (strong, nonatomic, readonly) NSArray<NSString *> *headerFreezeData;
 @property (strong, nonatomic, readonly) NSArray<NSString *> *headerSlideData;
@@ -34,5 +27,6 @@
 
 @property (strong, nonatomic, readonly) NSArray<NSString *> *freezeItemSize;
 @property (strong, nonatomic, readonly) NSArray<NSString *> *slideItemSize;
+
 
 @end

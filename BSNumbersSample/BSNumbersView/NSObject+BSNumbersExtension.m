@@ -11,7 +11,7 @@
 
 @implementation NSObject (BSNumbersExtension)
 
-- (NSArray<NSString *> *)getPropertiesValues {
+- (NSArray<NSString *> *)bs_values {
     
     unsigned int count;
     objc_property_t *cProperties = class_copyPropertyList(self.class, &count);

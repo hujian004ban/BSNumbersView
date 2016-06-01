@@ -7,6 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+
+typedef NS_ENUM(NSUInteger, BSNumbersSeparatorStyle) {
+    BSNumbersSeparatorStyleNone,
+    BSNumbersSeparatorStyleReal,
+    BSNumbersSeparatorStyleDotted
+};
+
 @class BSNumbersView;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,21 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 
 - (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
-     attributedStringForHeaderFreezeAtColumn:(NSInteger)column;
+        attributedStringAtIndexPath:(NSIndexPath *)indexPath;
 
-- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
-      attributedStringForHeaderSlideAtColumn:(NSInteger)column;
+- (nullable UIView *)numbersView:(BSNumbersView *)numbersView
+                 viewAtIndexPath:(NSIndexPath *)indexPath;
 
-- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath;
-
-- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForBodySlideAtIndexPath:(NSIndexPath *)indexPath;
-
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForHeaderFreezeAtColumn:(NSInteger)column;
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForHeaderSlideAtColumn:(NSInteger)column;
-
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath;
-
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewForBodySlideAtIndexPath:(NSIndexPath *)indexPath;
+- (void)numbersView:(BSNumbersView *)numbersView
+                 didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
@@ -38,17 +37,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic) id<BSNumbersViewDelegate> delegate;
 
-///min width for each square
-@property (assign, nonatomic) CGFloat minItemWidth;
+///min width for each item
+@property (assign, nonatomic) CGFloat itemMinWidth;
 
-///max width for each square
-@property (assign, nonatomic) CGFloat maxItemWidth;
+///max width for each item
+@property (assign, nonatomic) CGFloat itemMaxWidth;
 
-///height for each square
+///height for each item
 @property (assign, nonatomic) CGFloat itemHeight;
 
 ///text horizontal margin for each item, default is 10.0
-@property (assign, nonatomic) CGFloat itemTextHorizontalMargin;
+@property (assign, nonatomic) CGFloat horizontalItemTextMargin;
 
 ///the column need to freeze
 @property (assign, nonatomic) NSInteger freezeColumn;
@@ -80,19 +79,21 @@ NS_ASSUME_NONNULL_BEGIN
 ///body background color
 @property (strong, nonatomic) UIColor *freezeBodyBackgroundColor;
 
+///separator
+@property (assign, nonatomic) BSNumbersSeparatorStyle horizontalSeparatorStyle;
+
+///default is [UIColor LightGrayColor]
+@property (strong, nonatomic) UIColor *horizontalSeparatorColor;
+@property (strong, nonatomic) UIColor *verticalSeparatorColor;
+
 ///data
 @property (strong, nonatomic) NSArray<NSString *> *headerData;
 @property (strong, nonatomic) NSArray<NSObject *> *bodyData;
 
 
-- (NSString *)textForHeaderFreezeAtColumn:(NSInteger )column;
-- (NSString *)textForHeaderSlideAtColumn:(NSInteger )column;
+- (NSString *)textAtIndexPath:(NSIndexPath *)indexPath;
 
-- (NSString *)textForBodyFreezeAtIndexPath:(NSIndexPath *)indexPath;
-- (NSString *)textForBodySlideAtIndexPath:(NSIndexPath *)indexPath;
-
-- (CGSize)sizeForFreezeAtColumn:(NSInteger )column;
-- (CGSize)sizeForSlideAtColumn:(NSInteger )column;
+- (CGSize)sizeForRow:(NSInteger)row;
 
 - (void)reloadData;
 

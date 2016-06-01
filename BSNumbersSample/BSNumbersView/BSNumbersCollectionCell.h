@@ -13,5 +13,7 @@
 @property (assign, nonatomic) CGFloat horizontalMargin;
 @property (strong, nonatomic) UILabel *label;
 @property (strong, nonatomic) UIView *customView;
+@property (assign, nonatomic) BOOL separatorHidden;
+@property (strong, nonatomic) UIColor *separatorColor;
 
 @end
