@@ -1,5 +1,5 @@
 //
-//  BSNumbersCollectionFooterView.h
+//  BSNumbersCollectionHeaderView.h
 //  BSNumbersSample
 //
 //  Created by 张亚东 on 16/4/7.
@@ -8,7 +8,7 @@
 
 #import "BSNumbersView.h"
 
-@interface BSNumbersCollectionFooterView : UICollectionReusableView
+@interface BSNumbersCollectionHeaderView : UICollectionReusableView
 
 @property (assign, nonatomic) BSNumbersSeparatorStyle separatorStyle;
 @property (strong, nonatomic) UIColor *separatorColor;

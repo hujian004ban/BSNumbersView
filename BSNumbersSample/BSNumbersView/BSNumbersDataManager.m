@@ -33,7 +33,7 @@
     }
     if (self.numbersView.bodyData) {
         for (NSObject *bodyData in self.numbersView.bodyData) {
-            [flatData addObject:[bodyData bs_values]];
+            [flatData addObject:bodyData.bs_propertyValues];
         }
     }
     self.flatData = flatData.copy;

@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "Flight.h"
 #import "BSNumbersView.h"
+#import "NSObject+BSNumbersExtension.h"
 
 @interface ViewController () <BSNumbersViewDelegate>
 
@@ -38,8 +39,8 @@
     self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
     self.numbersView.freezeColumn = 1;
     self.numbersView.slideBodyFont = [UIFont systemFontOfSize:14];
-//    self.numbersView.horizontalSeparatorStyle = BSNumbersSeparatorStyleReal;
-//    self.numbersView.horizontalSeparatorColor = [UIColor redColor];
+//    self.numbersView.horizontalSeparatorStyle = BSNumbersSeparatorStyleSolid;
+//    self.numbersView.horizontalSeparatorColor = [UIColor whiteColor];
 //    self.numbersView.verticalSeparatorColor = [UIColor greenColor];
     
     self.numbersView.delegate = self;

@@ -10,6 +10,6 @@
 
 @interface NSObject (BSNumbersExtension)
 
-- (NSArray<NSString *> *)bs_values;
+@property (strong, nonatomic, readonly) NSArray<NSString *> *bs_propertyValues;
 
 @end

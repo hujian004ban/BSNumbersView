@@ -8,12 +8,12 @@
 
 #import "BSNumbersView.h"
 #import "BSNumbersCollectionCell.h"
-#import "BSNumbersCollectionFooterView.h"
+#import "BSNumbersCollectionHeaderView.h"
 #import "NSObject+BSNumbersExtension.h"
 #import "BSNumbersDataManager.h"
 
 NSString * const CellReuseIdentifer = @"BSNumbersCollectionCell";
-NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
+NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 
 @interface BSNumbersView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
 
@@ -348,13 +348,13 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
     flowLayout.minimumLineSpacing = 0;
     flowLayout.minimumInteritemSpacing = 0;
-    flowLayout.footerReferenceSize = CGSizeMake([UIScreen mainScreen].bounds.size.width, 1);
+    flowLayout.headerReferenceSize = CGSizeMake([UIScreen mainScreen].bounds.size.width, 1);
     
     UICollectionView *c = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     c.dataSource = self;
     c.delegate = self;
     [c registerClass:[BSNumbersCollectionCell class] forCellWithReuseIdentifier:CellReuseIdentifer];
-    [c registerClass:[BSNumbersCollectionFooterView class] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:FooterReuseIdentifer];
+    [c registerClass:[BSNumbersCollectionHeaderView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HeaderReuseIdentifer];
     c.backgroundColor = [UIColor clearColor];
     c.showsVerticalScrollIndicator = NO;
     c.bounces = NO;
@@ -477,7 +477,7 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
         return self.freezeColumn;
     } else {
         NSObject *firstBodyData = self.bodyData.firstObject;
-        NSInteger slideColumn = [firstBodyData bs_values].count - self.freezeColumn;
+        NSInteger slideColumn = firstBodyData.bs_propertyValues.count - self.freezeColumn;
         return slideColumn;
     }
 }
@@ -498,7 +498,7 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
     
     cell.separatorColor = self.verticalSeparatorColor;
     cell.separatorHidden = NO;
-    NSInteger valuesCount = self.bodyData.firstObject.bs_values.count;
+    NSInteger valuesCount = self.bodyData.firstObject.bs_propertyValues.count;
     if (valuesCount == self.freezeColumn) {
         if (indexPath.row == self.freezeColumn - 1) {
             cell.separatorHidden = YES;
@@ -513,16 +513,23 @@ NSString * const FooterReuseIdentifer = @"BSNumbersCollectionFooterView";
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
-    if (kind == UICollectionElementKindSectionFooter) {
-        BSNumbersCollectionFooterView *footerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:FooterReuseIdentifer forIndexPath:indexPath];
-        footerView.separatorStyle = self.horizontalSeparatorStyle;
-        footerView.separatorColor = self.horizontalSeparatorColor;
+    
+    if (kind == UICollectionElementKindSectionHeader) {
+        BSNumbersCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HeaderReuseIdentifer forIndexPath:indexPath];
+        headerView.separatorStyle = self.horizontalSeparatorStyle;
+        headerView.separatorColor = self.horizontalSeparatorColor;
         
-        //only body collection view 
-        if (indexPath.section == self.bodyData.count - 1) {
-            footerView.separatorStyle = BSNumbersSeparatorStyleNone;
+        if (indexPath.section == 0) {
+            if (self.headerData != nil) {
+                if (collectionView == self.headerFreezeCollectionView ||
+                    collectionView == self.headerSlideCollectionView) {
+                    headerView.separatorStyle = BSNumbersSeparatorStyleNone;
+                }
+            } else {
+                headerView.separatorStyle = BSNumbersSeparatorStyleNone;
+            }
         }
-        return footerView;
+        return headerView;
     } else {
         return nil;
     }

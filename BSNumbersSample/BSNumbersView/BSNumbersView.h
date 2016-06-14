@@ -10,7 +10,7 @@
 
 typedef NS_ENUM(NSUInteger, BSNumbersSeparatorStyle) {
     BSNumbersSeparatorStyleNone,
-    BSNumbersSeparatorStyleReal,
+    BSNumbersSeparatorStyleSolid,
     BSNumbersSeparatorStyleDotted
 };
 

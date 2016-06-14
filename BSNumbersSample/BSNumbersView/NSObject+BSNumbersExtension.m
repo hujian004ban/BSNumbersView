@@ -11,7 +11,19 @@
 
 @implementation NSObject (BSNumbersExtension)
 
-- (NSArray<NSString *> *)bs_values {
+- (NSArray<NSString *> *)bs_propertyValues {
+    
+    NSArray<NSString *> *propertyValues = objc_getAssociatedObject(self, @selector(bs_propertyValues));
+    if (propertyValues) {
+        return propertyValues;
+    }
+    
+    propertyValues = [self getPropertyValues];
+    objc_setAssociatedObject(self, @selector(bs_propertyValues), propertyValues, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    return propertyValues;
+}
+
+- (NSArray<NSString *> *)getPropertyValues {
     
     unsigned int count;
     objc_property_t *cProperties = class_copyPropertyList(self.class, &count);

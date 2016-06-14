@@ -1,20 +1,20 @@
 //
-//  BSNumbersCollectionFooterView.m
+//  BSNumbersCollectionHeaderView.m
 //  BSNumbersSample
 //
 //  Created by 张亚东 on 16/4/7.
 //  Copyright © 2016年 blurryssky. All rights reserved.
 //
 
-#import "BSNumbersCollectionFooterView.h"
+#import "BSNumbersCollectionHeaderView.h"
 
-@interface BSNumbersCollectionFooterView ()
+@interface BSNumbersCollectionHeaderView ()
 
 @property (strong, nonatomic) CAShapeLayer *lineLayer;
 
 @end
 
-@implementation BSNumbersCollectionFooterView
+@implementation BSNumbersCollectionHeaderView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
