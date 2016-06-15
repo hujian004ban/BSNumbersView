@@ -32,9 +32,8 @@
         Flight *flight = [[Flight alloc]initWithDictionary:flightInfo];
         [flights addObject:flight];
     }
-    
+
     self.numbersView.bodyData = flights;
-    
     //optional
     self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
     self.numbersView.freezeColumn = 1;

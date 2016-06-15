@@ -129,6 +129,8 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 
 - (void)setupViews {
 
+    self.clipsToBounds = YES;
+    
     [self addSubview:self.headerFreezeCollectionView];
     [self addSubview:self.freezeCollectionView];
     
@@ -514,7 +516,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
     
-    if (kind == UICollectionElementKindSectionHeader) {
+    if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         BSNumbersCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HeaderReuseIdentifer forIndexPath:indexPath];
         headerView.separatorStyle = self.horizontalSeparatorStyle;
         headerView.separatorColor = self.horizontalSeparatorColor;
