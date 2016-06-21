@@ -12,7 +12,7 @@
 
 ## Usage
 
-### Supple an array with models as datasource
+### Supply an array with models as datasource
 
 ```objective-c
 NSArray<NSDictionary *> *flightsInfo = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"flightsInfo" ofType:@"plist"]];
