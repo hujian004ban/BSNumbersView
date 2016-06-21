@@ -214,7 +214,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 - (void)showVerticalDivideShadowLayer {
     if (self.verticalDivideShadowLayer.path == nil) {
         
-        CGFloat height = self.freezeCollectionView.contentSize.height;
+        CGFloat height = self.freezeCollectionView.contentSize.height + self.headerFreezeCollectionView.contentSize.height;
         UIBezierPath *path = [UIBezierPath bezierPath];
         [path moveToPoint:CGPointMake(0, 0)];
         [path addLineToPoint:CGPointMake(0, height)];
@@ -384,7 +384,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     return NO;
 }
 
-- (void)_useCustomViewIfNeededInCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
+- (void)useCustomViewIfNeededInCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
     if ([self didImplementation:@selector(numbersView:viewAtIndexPath:)]) {
         UIView *customView = [self.delegate numbersView:self viewAtIndexPath:indexPath];
         if (customView) {
@@ -393,7 +393,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     }
 }
 
-- (void)_useAttributedStringIfNeededInCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
+- (void)useAttributedStringIfNeededInCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
     if ([self didImplementation:@selector(numbersView:attributedStringAtIndexPath:)]) {
         NSAttributedString *attributedString = [self.delegate numbersView:self attributedStringAtIndexPath:indexPath];
         if (attributedString) {
@@ -412,9 +412,9 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     cell.label.textColor = self.headerTextColor;
     cell.label.font = self.headerFont;
     
-    [self _useCustomViewIfNeededInCell:cell indexPath:indexPath];
+    [self useCustomViewIfNeededInCell:cell indexPath:indexPath];
     
-    [self _useAttributedStringIfNeededInCell:cell indexPath:indexPath];
+    [self useAttributedStringIfNeededInCell:cell indexPath:indexPath];
 }
 
 - (void)configureHeaderSlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
@@ -427,9 +427,9 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     
     NSIndexPath *targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + self.freezeColumn inSection:indexPath.section];
     
-    [self _useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
+    [self useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
     
-    [self _useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
+    [self useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
 }
 
 - (void)configureBodyFreezeCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
@@ -442,9 +442,9 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     
     NSIndexPath *targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section + 1];
     
-    [self _useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
+    [self useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
     
-    [self _useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
+    [self useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
 }
 
 - (void)configureBodySlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
@@ -456,9 +456,9 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     
     NSIndexPath *targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + self.freezeColumn inSection:indexPath.section + 1];
     
-    [self _useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
+    [self useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
     
-    [self _useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
+    [self useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
 }
 
 #pragma mark - UICollectionViewDataSource
