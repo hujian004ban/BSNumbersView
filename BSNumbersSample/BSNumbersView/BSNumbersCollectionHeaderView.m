@@ -20,6 +20,7 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        self.backgroundColor = [UIColor clearColor];
         [self.layer addSublayer:self.lineLayer];
     }
     return self;

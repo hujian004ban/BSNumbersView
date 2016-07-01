@@ -240,6 +240,64 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     [self.slideCollectionView reloadData];
 }
 
+- (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    
+    [self.dataManager caculate];
+    [self updateFrame];
+    
+    NSMutableArray *headerFreezeIndexPaths = [NSMutableArray new];
+    NSMutableArray *headerSlideIndexPaths = [NSMutableArray new];
+    NSMutableArray *freezeIndexPaths = [NSMutableArray new];
+    NSMutableArray *slideIndexPaths = [NSMutableArray new];
+    
+    for (NSIndexPath *indexPath in indexPaths) {
+        
+        //exsit header
+        if (self.headerData) {
+            //if header
+            if (indexPath.section == 0) {
+                
+                //if freeze
+                if (indexPath.row < self.freezeColumn) {
+                    
+                    [headerFreezeIndexPaths addObject:indexPath];
+
+                } else {
+                    
+                    [headerSlideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row - self.freezeColumn inSection:indexPath.section]];
+                }
+                //body
+            } else {
+                
+                //if freeze
+                if (indexPath.row < self.freezeColumn) {
+                    
+                    [freezeIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1]];
+                } else {
+                    
+                    [slideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row - self.freezeColumn inSection:indexPath.section - 1]];
+                }
+            }
+            
+            //body only
+        } else {
+            //if freeze
+            if (indexPath.row < self.freezeColumn) {
+                
+                [freezeIndexPaths addObject:indexPath];
+            } else {
+                
+                [slideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row - self.freezeColumn inSection:indexPath.section]];
+            }
+        }
+    }
+    
+    [self.headerFreezeCollectionView reloadItemsAtIndexPaths:headerFreezeIndexPaths];
+    [self.headerSlideCollectionView reloadItemsAtIndexPaths:headerSlideIndexPaths];
+    [self.freezeCollectionView reloadItemsAtIndexPaths:freezeIndexPaths];
+    [self.slideCollectionView reloadItemsAtIndexPaths:slideIndexPaths];
+}
+
 - (CGSize)sizeForRow:(NSInteger)row {
     
     if (row < self.freezeColumn) {
@@ -264,21 +322,6 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
             return self.dataManager.bodySlideData[indexPath.section - 1][indexPath.row- self.freezeColumn];
         }
     }
-}
-
-#pragma mark - Setter
-
-- (void)setHeaderData:(NSArray<NSString *> *)headerData {
-    _headerData = headerData;
-    
-    [self.dataManager setupFlatData];
-}
-
-- (void)setBodyData:(NSArray<NSObject *> *)bodyData {
-    _bodyData = bodyData;
-    
-    [self.dataManager setupFlatData];
-    [self reloadData];
 }
 
 #pragma mark - Getter
@@ -510,7 +553,6 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
             cell.separatorHidden = YES;
         }
     }
-    
     return cell;
 }
 

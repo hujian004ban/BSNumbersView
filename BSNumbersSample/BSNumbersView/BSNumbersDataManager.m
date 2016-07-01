@@ -14,15 +14,13 @@
 
 @property (strong, nonatomic) NSArray<NSArray<NSString *> *> *flatData;
 
+- (void)setupFlatData;
 - (void)configureData;
 - (void)caculateWidths;
 
 @end
 
 @implementation BSNumbersDataManager
-
-#pragma mark - Override
-
 
 #pragma mark - Private
 
@@ -62,7 +60,6 @@
         }
         [bodyFreezeData addObject:freezeCollectionViewSectionFlatData];
         [bodySlideData addObject:slideCollectionViewSectionFlatData];
-        
     }
     
     if (self.numbersView.headerData) {
@@ -75,7 +72,6 @@
         _bodyFreezeData = bodyFreezeData.copy;
         _bodySlideData = bodySlideData.copy;
     }
-
 }
 
 - (void)caculateWidths {
@@ -127,6 +123,7 @@
 #pragma mark - Public
 
 - (void)caculate {
+    [self setupFlatData];
     [self configureData];
     [self caculateWidths];
 }

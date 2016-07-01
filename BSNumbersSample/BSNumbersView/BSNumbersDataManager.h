@@ -14,7 +14,6 @@
 @property (weak, nonatomic) BSNumbersView *numbersView;
 
 - (void)caculate;
-- (void)setupFlatData;
 
 @property (strong, nonatomic, readonly) NSArray<NSString *> *headerFreezeData;
 @property (strong, nonatomic, readonly) NSArray<NSString *> *headerSlideData;

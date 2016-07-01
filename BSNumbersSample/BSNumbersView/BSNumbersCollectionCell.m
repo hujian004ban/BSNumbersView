@@ -103,6 +103,7 @@
 }
 
 #pragma mark - Getter
+
 - (UILabel *)label {
     if (!_label) {
         _label = [UILabel new];

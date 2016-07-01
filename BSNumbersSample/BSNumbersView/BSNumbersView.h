@@ -18,15 +18,16 @@ typedef NS_ENUM(NSUInteger, BSNumbersSeparatorStyle) {
 
 NS_ASSUME_NONNULL_BEGIN
 
+
 @protocol BSNumbersViewDelegate <NSObject>
 
 @optional
 
-- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
-        attributedStringAtIndexPath:(NSIndexPath *)indexPath;
-
 - (nullable UIView *)numbersView:(BSNumbersView *)numbersView
                  viewAtIndexPath:(NSIndexPath *)indexPath;
+
+- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
+        attributedStringAtIndexPath:(NSIndexPath *)indexPath;
 
 - (void)numbersView:(BSNumbersView *)numbersView
                  didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
@@ -96,6 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)sizeForRow:(NSInteger)row;
 
 - (void)reloadData;
+- (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
 
 NS_ASSUME_NONNULL_END
 

@@ -14,6 +14,7 @@
 @interface ViewController () <BSNumbersViewDelegate>
 
 @property (weak, nonatomic) IBOutlet BSNumbersView *numbersView;
+@property (strong, nonnull) NSArray<Flight *> *flights;
 
 @end
 
@@ -32,6 +33,7 @@
         Flight *flight = [[Flight alloc]initWithDictionary:flightInfo];
         [flights addObject:flight];
     }
+    self.flights = flights.copy;
 
     self.numbersView.bodyData = flights;
     //optional
@@ -96,7 +98,17 @@
 
 - (void)numbersView:(BSNumbersView *)numbersView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"section = %ld, row = %ld", (long)indexPath.section, (long)indexPath.row);
+    
+    //modify the text
+    //1 you can use - (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewAtIndexPath:(NSIndexPath *)indexPath;  return a UITextField or UITextView to modify data, and then - (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
+    //2 you can use UIAlertController to alert modify text
+    
+    if (indexPath.section > 0) {
+        //the section 1 is header
+        Flight *flight = self.flights[indexPath.section - 1];
+        flight.company = @"四川航空";
+        [numbersView reloadItemsAtIndexPaths:@[indexPath]];
+    }
 }
-
 
 @end
