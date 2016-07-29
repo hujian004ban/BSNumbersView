@@ -39,53 +39,53 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) id<BSNumbersViewDelegate> delegate;
 
 ///min width for each item
-@property (assign, nonatomic) CGFloat itemMinWidth;
+@property (assign, nonatomic) IBInspectable CGFloat itemMinWidth;
 
 ///max width for each item
-@property (assign, nonatomic) CGFloat itemMaxWidth;
+@property (assign, nonatomic) IBInspectable CGFloat itemMaxWidth;
 
 ///height for each item
-@property (assign, nonatomic) CGFloat itemHeight;
+@property (assign, nonatomic) IBInspectable CGFloat itemHeight;
 
 ///text horizontal margin for each item, default is 10.0
-@property (assign, nonatomic) CGFloat horizontalItemTextMargin;
+@property (assign, nonatomic) IBInspectable CGFloat horizontalItemTextMargin;
 
 ///the column need to freeze
-@property (assign, nonatomic) NSInteger freezeColumn;
+@property (assign, nonatomic) IBInspectable NSInteger freezeColumn;
 
 ///header font
-@property (strong, nonatomic) UIFont *headerFont;
+@property (strong, nonatomic) IBInspectable UIFont *headerFont;
 
 ///header text color
-@property (strong, nonatomic) UIColor *headerTextColor;
+@property (strong, nonatomic) IBInspectable UIColor *headerTextColor;
 
 ///header background color
-@property (strong, nonatomic) UIColor *headerBackgroundColor;
+@property (strong, nonatomic) IBInspectable UIColor *headerBackgroundColor;
 
 ///body font
-@property (strong, nonatomic) UIFont *slideBodyFont;
+@property (strong, nonatomic) IBInspectable UIFont *slideBodyFont;
 
 ///body text color
-@property (strong, nonatomic) UIColor *slideBodyTextColor;
+@property (strong, nonatomic) IBInspectable UIColor *slideBodyTextColor;
 
 ///body background color
-@property (strong, nonatomic) UIColor *slideBodyBackgroundColor;
+@property (strong, nonatomic) IBInspectable UIColor *slideBodyBackgroundColor;
 
 ///body font
-@property (strong, nonatomic) UIFont *freezeBodyFont;
+@property (strong, nonatomic) IBInspectable UIFont *freezeBodyFont;
 
 ///body text color
-@property (strong, nonatomic) UIColor *freezeBodyTextColor;
+@property (strong, nonatomic) IBInspectable UIColor *freezeBodyTextColor;
 
 ///body background color
-@property (strong, nonatomic) UIColor *freezeBodyBackgroundColor;
+@property (strong, nonatomic) IBInspectable UIColor *freezeBodyBackgroundColor;
 
 ///separator
-@property (assign, nonatomic) BSNumbersSeparatorStyle horizontalSeparatorStyle;
+@property (assign, nonatomic) IBInspectable BSNumbersSeparatorStyle horizontalSeparatorStyle;
 
 ///default is [UIColor LightGrayColor]
-@property (strong, nonatomic) UIColor *horizontalSeparatorColor;
-@property (strong, nonatomic) UIColor *verticalSeparatorColor;
+@property (strong, nonatomic) IBInspectable UIColor *horizontalSeparatorColor;
+@property (strong, nonatomic) IBInspectable UIColor *verticalSeparatorColor;
 
 ///data
 @property (strong, nonatomic) NSArray<NSString *> *headerData;
