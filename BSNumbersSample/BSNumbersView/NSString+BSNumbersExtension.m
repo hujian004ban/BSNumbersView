@@ -11,15 +11,11 @@
 @implementation NSString (BSNumbersExtension)
 
 - (CGSize)bs_sizeWithFont:(UIFont *)font constraint:(CGSize)constraint {
-    CGSize size;
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_7_0
-    NSStringDrawingOptions options = NSStringDrawingTruncatesLastVisibleLine | NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin;
+    
+    NSStringDrawingOptions options = NSStringDrawingUsesFontLeading | NSStringDrawingUsesLineFragmentOrigin;
     NSDictionary *attributes = @{ NSFontAttributeName: font };
     CGRect bounds = [self boundingRectWithSize:constraint options:options attributes:attributes context:nil];
-    size = bounds.size;
-#else
-    size = [self bs_sizeWithFont:font constrainedToSize:constraint lineBreakMode:NSLineBreakByCharWrapping];
-#endif
+    CGSize size = bounds.size;
     return size;
 }
 

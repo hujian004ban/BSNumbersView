@@ -93,7 +93,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     UIDeviceOrientation orientation = [UIDevice currentDevice].orientation;
     
     if (orientation != UIDeviceOrientationPortraitUpsideDown) {
-        [UIView animateWithDuration:0.3 animations:^{
+        [UIView animateWithDuration:0.25 animations:^{
             [self updateFrame];
         }];
     }

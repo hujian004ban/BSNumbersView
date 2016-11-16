@@ -40,6 +40,9 @@
     self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
     self.numbersView.freezeColumn = 1;
     self.numbersView.slideBodyFont = [UIFont systemFontOfSize:14];
+    self.numbersView.itemMaxWidth = 300;
+    self.numbersView.itemMinWidth = 100;
+    self.numbersView.itemHeight = 50;
 //    self.numbersView.horizontalSeparatorStyle = BSNumbersSeparatorStyleSolid;
 //    self.numbersView.horizontalSeparatorColor = [UIColor whiteColor];
 //    self.numbersView.verticalSeparatorColor = [UIColor greenColor];

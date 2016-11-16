@@ -38,8 +38,8 @@
 }
 
 - (void)configureData {
-    NSMutableArray *bodyFreezeData = @[].mutableCopy;
-    NSMutableArray *bodySlideData = @[].mutableCopy;
+    NSMutableArray *freezeData = @[].mutableCopy;
+    NSMutableArray *slideData = @[].mutableCopy;
     
     for (NSInteger i = 0; i < self.flatData.count; i ++) {
         
@@ -58,19 +58,19 @@
                 [slideCollectionViewSectionFlatData addObject:value];
             }
         }
-        [bodyFreezeData addObject:freezeCollectionViewSectionFlatData];
-        [bodySlideData addObject:slideCollectionViewSectionFlatData];
+        [freezeData addObject:freezeCollectionViewSectionFlatData];
+        [slideData addObject:slideCollectionViewSectionFlatData];
     }
     
     if (self.numbersView.headerData) {
-        _headerFreezeData = bodyFreezeData.firstObject;
-        _headerSlideData = bodySlideData.firstObject;
+        _headerFreezeData = freezeData.firstObject;
+        _headerSlideData = slideData.firstObject;
         
-        _bodyFreezeData = [bodyFreezeData subarrayWithRange:NSMakeRange(1, bodyFreezeData.count - 1)];
-        _bodySlideData = [bodySlideData subarrayWithRange:NSMakeRange(1, bodyFreezeData.count - 1)];
+        _bodyFreezeData = [freezeData subarrayWithRange:NSMakeRange(1, freezeData.count - 1)];
+        _bodySlideData = [slideData subarrayWithRange:NSMakeRange(1, slideData.count - 1)];
     } else {
-        _bodyFreezeData = bodyFreezeData.copy;
-        _bodySlideData = bodySlideData.copy;
+        _bodyFreezeData = freezeData.copy;
+        _bodySlideData = slideData.copy;
     }
 }
 
@@ -91,11 +91,11 @@
         //遍历行
         for (NSInteger j = 0; j < self.flatData.count; j ++) {
             
-            NSString *columnValue = self.flatData[j][i];
+            NSString *value = self.flatData[j][i];
             
-            CGSize size = [columnValue bs_sizeWithFont:self.numbersView.slideBodyFont constraint:CGSizeMake(self.numbersView.itemMaxWidth, self.numbersView.itemHeight)];
+            CGSize size = [value bs_sizeWithFont:self.numbersView.slideBodyFont constraint:CGSizeMake(self.numbersView.itemMaxWidth, self.numbersView.itemHeight)];
             if (j == 0) {
-                size = [columnValue bs_sizeWithFont:self.numbersView.headerFont constraint:CGSizeMake(self.numbersView.itemMaxWidth, self.numbersView.itemHeight)];
+                size = [value bs_sizeWithFont:self.numbersView.headerFont constraint:CGSizeMake(self.numbersView.itemMaxWidth, self.numbersView.itemHeight)];
             }
             
             CGFloat targetWidth = size.width + 2 * self.numbersView.horizontalItemTextMargin;
@@ -104,7 +104,7 @@
                 columnMaxWidth = targetWidth;
             }
             
-            columnMaxWidth = floor(MAX(self.numbersView.itemMinWidth, MIN(self.numbersView.itemMaxWidth, columnMaxWidth)));
+            columnMaxWidth = ceil(MAX(self.numbersView.itemMinWidth, MIN(self.numbersView.itemMaxWidth, columnMaxWidth)));
         }
         
         if (i < self.numbersView.freezeColumn) {
