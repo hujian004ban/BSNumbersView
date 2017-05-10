@@ -7,16 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <UIKit/UIKit.h>
+#import "BSNumbersViewEnum.h"
 
 @interface BSNumbersCollectionCell : UICollectionViewCell
 
-@property (assign, nonatomic) CGFloat horizontalMargin;
+@property (nonatomic) CGFloat textHorizontalMargin;
 
-@property (strong, nonatomic) UILabel *label;
-
-@property (strong, nonatomic) UIView *customView;
-
-@property (assign, nonatomic) BOOL separatorHidden;
-@property (strong, nonatomic) UIColor *separatorColor;
+- (void)setAttributedString:(NSAttributedString *)attributedString;
 
 @end

@@ -7,98 +7,81 @@
 //
 
 #import <UIKit/UIKit.h>
-
-typedef NS_ENUM(NSUInteger, BSNumbersSeparatorStyle) {
-    BSNumbersSeparatorStyleNone,
-    BSNumbersSeparatorStyleSolid,
-    BSNumbersSeparatorStyleDotted
-};
-
-@class BSNumbersView;
+#import "BSNumbersViewEnum.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class BSNumbersView;
 
-@protocol BSNumbersViewDelegate <NSObject>
+@protocol BSNumbersViewDataSource<NSObject>
+
+@required
+- (NSInteger)numberOfRowsInNumbersView:(BSNumbersView *)numbersView;
+- (NSInteger)numberOfColumnsInNumbersView:(BSNumbersView *)numbersView;
+- (__kindof NSAttributedString * _Nullable)numbersView:(BSNumbersView *)numbersView attributedStringForItemAtIndexPath:(NSIndexPath *)indexPath;
 
 @optional
+- (__kindof UICollectionViewCell * _Nullable)numbersView:(BSNumbersView *)numbersView cellForItemAtIndexPath:(NSIndexPath *)indexPath;
+@end
 
-- (nullable UIView *)numbersView:(BSNumbersView *)numbersView
-                 viewAtIndexPath:(NSIndexPath *)indexPath;
+@protocol BSNumbersViewDelegate<NSObject>
 
-- (nullable NSAttributedString *)numbersView:(BSNumbersView *)numbersView
-        attributedStringAtIndexPath:(NSIndexPath *)indexPath;
-
-- (void)numbersView:(BSNumbersView *)numbersView
-                 didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
+@optional
+- (CGFloat)numbersView:(BSNumbersView *)numbersView heightForRow:(NSInteger)row;
+- (CGFloat)numbersView:(BSNumbersView *)numbersView widthForColumn:(NSInteger)column;
+- (void)numbersView:(BSNumbersView *)numbersView didSelectItemAtIndexPath:(NSIndexPath *)indexPath;
 
 @end
 
+///automatic caculate width, base on text length and textHorizontalMargin
+UIKIT_EXTERN const CGFloat BSNumbersViewAutomaticDimension;
+
 @interface BSNumbersView : UIView
 
-@property (assign, nonatomic) id<BSNumbersViewDelegate> delegate;
+@property (nonatomic, weak, nullable) IBInspectable id<BSNumbersViewDataSource> dataSource;
+@property (nonatomic, weak, nullable) IBInspectable id<BSNumbersViewDelegate> delegate;
 
-///min width for each item
-@property (assign, nonatomic) IBInspectable CGFloat itemMinWidth;
+///the columns need to freeze, default is 1
+@property (nonatomic) IBInspectable NSInteger columnsToFreeze;
+///if the first row needs to freeze, default is NO
+@property (nonatomic) IBInspectable BOOL isFreezeFirstRow;
 
-///max width for each item
-@property (assign, nonatomic) IBInspectable CGFloat itemMaxWidth;
+///default is BSNumbersSeparatorStyleSolid
+@property (nonatomic) IBInspectable BSNumbersSeparatorStyle rowSeparatorStyle;
+@property (nonatomic, strong) IBInspectable UIColor *rowSeparatorColor;
 
-///height for each item
-@property (assign, nonatomic) IBInspectable CGFloat itemHeight;
-
-///text horizontal margin for each item, default is 10.0
-@property (assign, nonatomic) IBInspectable CGFloat horizontalItemTextMargin;
-
-///the column need to freeze
-@property (assign, nonatomic) IBInspectable NSInteger freezeColumn;
-
-///header font
-@property (strong, nonatomic) IBInspectable UIFont *headerFont;
-
-///header text color
-@property (strong, nonatomic) IBInspectable UIColor *headerTextColor;
-
-///header background color
-@property (strong, nonatomic) IBInspectable UIColor *headerBackgroundColor;
-
-///body font
-@property (strong, nonatomic) IBInspectable UIFont *slideBodyFont;
-
-///body text color
-@property (strong, nonatomic) IBInspectable UIColor *slideBodyTextColor;
-
-///body background color
-@property (strong, nonatomic) IBInspectable UIColor *slideBodyBackgroundColor;
-
-///body font
-@property (strong, nonatomic) IBInspectable UIFont *freezeBodyFont;
-
-///body text color
-@property (strong, nonatomic) IBInspectable UIColor *freezeBodyTextColor;
-
-///body background color
-@property (strong, nonatomic) IBInspectable UIColor *freezeBodyBackgroundColor;
-
-///separator
-@property (assign, nonatomic) IBInspectable BSNumbersSeparatorStyle horizontalSeparatorStyle;
-
-///default is [UIColor LightGrayColor]
-@property (strong, nonatomic) IBInspectable UIColor *horizontalSeparatorColor;
-@property (strong, nonatomic) IBInspectable UIColor *verticalSeparatorColor;
-
-///data
-@property (strong, nonatomic) NSArray<NSString *> *headerData;
-@property (strong, nonatomic) NSArray<NSObject *> *bodyData;
-
-
-- (NSString *)textAtIndexPath:(NSIndexPath *)indexPath;
-
-- (CGSize)sizeForRow:(NSInteger)row;
+@property (nonatomic) IBInspectable BSNumbersSeparatorStyle columnSeparatorStyle;
+@property (nonatomic, strong) IBInspectable UIColor *columnSeparatorColor;
 
 - (void)reloadData;
 - (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
 
-NS_ASSUME_NONNULL_END
+///default is 100
+@property (nonatomic) IBInspectable CGFloat itemMinWidth;
+///default is 150
+@property (nonatomic) IBInspectable CGFloat itemMaxWidth;
+///default is 50
+@property (nonatomic) IBInspectable CGFloat rowHeight;
+///default is 10
+@property (nonatomic) IBInspectable CGFloat textHorizontalMargin;
+
+/* if - (__kindof UICollectionViewCell *)numbersView:(BSNumbersView *)numbersView cellForItemAtIndexPath:(NSIndexPath *)indexPath;  need to implementation, register cell first.
+*/
+- (void)registerClass:(nullable Class)cellClass forCellWithReuseIdentifier:(NSString *)identifier;
+- (void)registerNib:(nullable UINib *)nib forCellWithReuseIdentifier:(NSString *)identifier;
+
+- (__kindof UICollectionViewCell *)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath;
 
 @end
+
+@interface NSIndexPath (BSNumbersView)
+
++ (instancetype)indexPathForColumn:(NSInteger)column inRow:(NSInteger)row;
+
+@property (nonatomic, readonly) NSInteger column;
+
+- (NSString *)bs_description;
+
+@end
+
+NS_ASSUME_NONNULL_END

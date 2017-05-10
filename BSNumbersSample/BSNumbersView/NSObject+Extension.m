@@ -1,17 +1,17 @@
 //
-//  NSObject+BSNumbersExtension.m
+//  NSObject+BSNumbers.m
 //  BSNumbersSample
 //
 //  Created by 张亚东 on 16/4/6.
 //  Copyright © 2016年 blurryssky. All rights reserved.
 //
 
-#import "NSObject+BSNumbersExtension.h"
+#import "NSObject+Extension.h"
 #import <objc/runtime.h>
 
-@implementation NSObject (BSNumbersExtension)
+@implementation NSObject (Extension)
 
-- (NSArray<NSString *> *)bs_propertyValues {
+- (NSArray<NSString *> *)bs_propertyStringValues {
     
     unsigned int count;
     objc_property_t *cProperties = class_copyPropertyList(self.class, &count);
@@ -26,6 +26,7 @@
         
         [values addObject:[NSString stringWithFormat:@"%@",[self valueForKey:name]]];
     }
+    free(cProperties);
     
     return values.copy;
 }

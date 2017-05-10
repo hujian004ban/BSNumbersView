@@ -9,12 +9,16 @@
 #import "ViewController.h"
 #import "Flight.h"
 #import "BSNumbersView.h"
-#import "NSObject+BSNumbersExtension.h"
+#import "NSObject+Extension.h"
+#import "SampleCollectionCell.h"
 
-@interface ViewController () <BSNumbersViewDelegate>
+NSString * const SampleCollectionCellReuseIdentifier = @"SampleCollectionCellReuseIdentifier";
+
+@interface ViewController () <BSNumbersViewDelegate, BSNumbersViewDataSource>
 
 @property (weak, nonatomic) IBOutlet BSNumbersView *numbersView;
-@property (strong, nonnull) NSArray<Flight *> *flights;
+@property (nonatomic, strong) NSArray<Flight *> *flights;
+@property (nonatomic, strong) NSArray<NSString *> *headerData;
 
 @end
 
@@ -33,85 +37,90 @@
         Flight *flight = [[Flight alloc]initWithDictionary:flightInfo];
         [flights addObject:flight];
     }
-    self.flights = flights.copy;
+    _flights = flights.copy;
+    
+    _headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
 
-    self.numbersView.bodyData = flights;
-    //optional
-    self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
-    self.numbersView.freezeColumn = 1;
-    self.numbersView.slideBodyFont = [UIFont systemFontOfSize:14];
-    self.numbersView.itemMaxWidth = 300;
-    self.numbersView.itemMinWidth = 100;
-    self.numbersView.itemHeight = 50;
-//    self.numbersView.horizontalSeparatorStyle = BSNumbersSeparatorStyleSolid;
-//    self.numbersView.horizontalSeparatorColor = [UIColor whiteColor];
-//    self.numbersView.verticalSeparatorColor = [UIColor greenColor];
+//    _numbersView.columnsToFreeze = 3;
+    _numbersView.itemMaxWidth = 300;
+    _numbersView.itemMinWidth = 100;
+    _numbersView.rowHeight = 50;
+
+    _numbersView.isFreezeFirstRow = YES;
+    _numbersView.delegate = self;
+    _numbersView.dataSource = self;
     
-    self.numbersView.delegate = self;
+    [_numbersView registerNib:[UINib nibWithNibName:@"SampleCollectionCell" bundle:nil] forCellWithReuseIdentifier:SampleCollectionCellReuseIdentifier];
+    //添加边界线
+//    _numbersView.layer.borderColor = [UIColor lightGrayColor].CGColor;
+//    _numbersView.layer.borderWidth = 0.5;
     
-    self.numbersView.layer.borderColor = [UIColor lightGrayColor].CGColor;
-    self.numbersView.layer.borderWidth = 0.5;
+    [_numbersView reloadData];
+}
+
+#pragma mark - BSNumbersViewDataSource
+
+- (NSInteger)numberOfColumnsInNumbersView:(BSNumbersView *)numbersView {
+//    return _headerData.count;
+    return _flights.firstObject.bs_propertyStringValues.count;
+}
+
+- (NSInteger)numberOfRowsInNumbersView:(BSNumbersView *)numbersView {
+    // +1是headerData
+    return _flights.count + 1;
+}
+
+- (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    [self.numbersView reloadData];
+    NSString *string = nil;
+    if (indexPath.row == 0) {
+        string = _headerData[indexPath.column];
+    } else {
+        string = _flights[indexPath.row - 1].bs_propertyStringValues[indexPath.column];
+    }
+    
+    NSAttributedString *attributedString = [[NSAttributedString alloc]initWithString:string attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:14]}];
+    return attributedString;
+}
+
+- (UICollectionViewCell *)numbersView:(BSNumbersView *)numbersView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row != 0) {
+        if (indexPath.column == 1) {
+            SampleCollectionCell *cell = [numbersView dequeueReusableCellWithReuseIdentifier:SampleCollectionCellReuseIdentifier forIndexPath:indexPath];
+            cell.string = _flights[indexPath.row - 1].bs_propertyStringValues[indexPath.column];
+            return cell;
+        }
+    }
+    return nil;
 }
 
 #pragma mark -- BSNumbersViewDelegate
 
-- (UIView *)numbersView:(BSNumbersView *)numbersView viewAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (indexPath.row == 0 && indexPath.section != 0) {
-        CGSize size = [numbersView sizeForRow:indexPath.row];
-        NSString *text = [numbersView textAtIndexPath:indexPath];
-        
-        UIView *view = [UIView new];
-        view.backgroundColor = [UIColor lightGrayColor];
-        
-        UIView *square = [UIView new];
-        square.backgroundColor = [UIColor orangeColor];
-        square.frame = CGRectMake(0, 0, 15, 15);
-        square.center = CGPointMake(size.width/2 - 35, size.height/2);
-        [view addSubview:square];
-        
-        UILabel *label = [UILabel new];
-        label.text = text;
-        label.textColor = [UIColor whiteColor];
-        label.font = [UIFont systemFontOfSize:14];
-        label.frame = CGRectMake(0, 0, 100, 100);
-        label.center = CGPointMake(size.width/2 + 10, size.height/2);
-        label.textAlignment = NSTextAlignmentCenter;
-        [view addSubview:label];
-        
-        return view;
+- (CGFloat)numbersView:(BSNumbersView *)numbersView heightForRow:(NSInteger)row {
+    if (row % 2 == 1) {
+        return 50;
+    } else {
+        return 100;
     }
-    return nil;
 }
 
-- (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringAtIndexPath:(NSIndexPath *)indexPath {
-    if (indexPath.row == 1 && indexPath.section != 0) {
-        NSString *text = [numbersView textAtIndexPath:indexPath];
-        NSMutableAttributedString *string = [[NSMutableAttributedString alloc]initWithString:text];
-        
-        [string addAttributes:@{NSForegroundColorAttributeName: [UIColor redColor],
-                                NSFontAttributeName: [UIFont systemFontOfSize:11]} range:NSMakeRange(0, 2)];
-        [string addAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:19]} range:NSMakeRange(2, text.length - 2)];
-        return string;
+- (CGFloat)numbersView:(BSNumbersView *)numbersView widthForColumn:(NSInteger)column {
+    if (column == 1) {
+        return 150;
+    } else {
+        return BSNumbersViewAutomaticDimension;
     }
-    return nil;
 }
 
 - (void)numbersView:(BSNumbersView *)numbersView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSLog(@"section = %ld, row = %ld", (long)indexPath.section, (long)indexPath.row);
+    NSLog(@"%@", indexPath.bs_description);
     
-    //modify the text
-    //1 you can use - (nullable UIView *)numbersView:(BSNumbersView *)numbersView viewAtIndexPath:(NSIndexPath *)indexPath;  return a UITextField or UITextView to modify data, and then - (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
-    //2 you can use UIAlertController to alert modify text
+    _headerData = @[@"???", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
+    NSIndexPath *indexPathToReload = [NSIndexPath indexPathForColumn:0 inRow:0];
+    [numbersView reloadItemsAtIndexPaths:@[indexPathToReload]];
     
-    if (indexPath.section > 0) {
-        //the section 1 is header
-        Flight *flight = self.flights[indexPath.section - 1];
-        flight.company = @"四川航空";
-        [numbersView reloadItemsAtIndexPaths:@[indexPath]];
-    }
+    //if someone need to modify the text, you can use UIAlertController to alert modify text,
+    //then use - (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
 }
 
 @end

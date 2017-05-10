@@ -10,66 +10,86 @@
 
 @interface BSNumbersCollectionHeaderView ()
 
-@property (strong, nonatomic) CAShapeLayer *lineLayer;
+@property (nonatomic, strong) CAShapeLayer *rowSeparatorLayer;
 
 @end
 
 @implementation BSNumbersCollectionHeaderView
 
+#pragma mark - override
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor clearColor];
-        [self.layer addSublayer:self.lineLayer];
+        [self setup];
+    }
+    return self;
+}
+
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    self = [super initWithCoder:coder];
+    if (self) {
+        [self setup];
     }
     return self;
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
+    [self updateFrame];
+}
+
+#pragma mark - private
+- (void)setup {
+    self.backgroundColor = [UIColor clearColor];
+    [self.layer addSublayer:self.rowSeparatorLayer];
+}
+
+- (void)updateFrame {
     UIBezierPath *path = [UIBezierPath bezierPath];
     [path moveToPoint:CGPointMake(0, self.bounds.size.height/2)];
     [path addLineToPoint:CGPointMake(self.bounds.size.width, self.bounds.size.height/2)];
-    path.lineWidth = 1;
     
-    self.lineLayer.path = path.CGPath;
-    
+    _rowSeparatorLayer.path = path.CGPath;
 }
 
-- (void)setSeparatorStyle:(BSNumbersSeparatorStyle)separatorStyle {
-    if (_separatorStyle != separatorStyle) {
-        _separatorStyle = separatorStyle;
+#pragma mark - getter
+- (CAShapeLayer *)rowSeparatorLayer {
+    if (!_rowSeparatorLayer) {
+        _rowSeparatorLayer = [CAShapeLayer layer];
+        _rowSeparatorLayer.strokeColor = [UIColor lightGrayColor].CGColor;
+        _rowSeparatorLayer.lineWidth = 1;
+    }
+    return _rowSeparatorLayer;
+}
+
+#pragma mark - setter
+
+- (void)setRowSeparatorStyle:(BSNumbersSeparatorStyle)rowSeparatorStyle {
+    if (_rowSeparatorStyle != rowSeparatorStyle) {
+        _rowSeparatorStyle = rowSeparatorStyle;
         
-        self.lineLayer.hidden = NO;
+        _rowSeparatorLayer.hidden = NO;
         [self layoutIfNeeded];
-        if (separatorStyle == BSNumbersSeparatorStyleNone) {
-            self.lineLayer.hidden = YES;
-        } else if (separatorStyle == BSNumbersSeparatorStyleDotted) {
-            [self.lineLayer setLineDashPattern:@[@2]];
-        } else {
-            [self.lineLayer setLineDashPattern:nil];
+        if (rowSeparatorStyle == BSNumbersSeparatorStyleNone) {
+            _rowSeparatorLayer.hidden = YES;
+        } else if (rowSeparatorStyle == BSNumbersSeparatorStyleDotted) {
+            _rowSeparatorLayer.lineDashPattern = @[@2];
+        } else if (rowSeparatorStyle == BSNumbersSeparatorStyleSolid){
+            _rowSeparatorLayer.lineDashPattern = nil;
         }
     }
-    
 }
 
-- (void)setSeparatorColor:(UIColor *)separatorColor {
-    
-    if (_separatorColor != separatorColor) {
-        _separatorColor = separatorColor;
+- (void)setRowSeparatorColor:(UIColor *)rowSeparatorColor {
+    if (_rowSeparatorColor != rowSeparatorColor) {
+        _rowSeparatorColor = rowSeparatorColor;
         
-        self.lineLayer.strokeColor = separatorColor.CGColor;
+        _rowSeparatorLayer.strokeColor = rowSeparatorColor.CGColor;
     }
 }
 
-- (CAShapeLayer *)lineLayer {
-    if (!_lineLayer) {
-        _lineLayer = [CAShapeLayer layer];
-        _lineLayer.strokeColor = [UIColor lightGrayColor].CGColor;
-    }
-    return _lineLayer;
-}
+
 
 @end

@@ -9,43 +9,49 @@
 #import "BSNumbersView.h"
 #import "BSNumbersCollectionCell.h"
 #import "BSNumbersCollectionHeaderView.h"
-#import "NSObject+BSNumbersExtension.h"
-#import "BSNumbersDataManager.h"
+#import "NSString+BSNumbers.h"
+#import "BSNumbersViewMarcos.h"
+#import <objc/runtime.h>
 
-NSString * const CellReuseIdentifer = @"BSNumbersCollectionCell";
-NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
+const CGFloat BSNumbersViewAutomaticDimension = 1646.1646;
+
+NSString * const CellReuseIdentifer = @"com.blurryssky.numbersview.collectioncell";
+NSString * const HeaderReuseIdentifer = @"com.blurryssky.numbersview.collectionheader";
 
 @interface BSNumbersView () <UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIScrollViewDelegate>
 
-@property (strong, nonatomic) BSNumbersDataManager *dataManager;
+@property (nonatomic, strong) UICollectionView *headerFreezeCollectionView;
+@property (nonatomic, strong) UICollectionView *bodyFreezeCollectionView;
 
-@property (strong, nonatomic) UICollectionView *headerFreezeCollectionView;
-@property (strong, nonatomic) UICollectionView *headerSlideCollectionView;
+@property (nonatomic, strong) UIScrollView *slideScrollView;
 
-@property (strong, nonatomic) UICollectionView *freezeCollectionView;
-@property (strong, nonatomic) UICollectionView *slideCollectionView;
+@property (nonatomic, strong) UICollectionView *headerSlideCollectionView;
+@property (nonatomic, strong) UICollectionView *bodySlideCollectionView;
 
-@property (strong, nonatomic) UIScrollView *slideScrollView;
+@property (nonatomic, strong) UIBezierPath *freezeColumnSeparatorPath;
+@property (nonatomic, strong) UIBezierPath *slideColumnSeparatorPath;
 
-@property (strong, nonatomic) CAShapeLayer *horizontalDivideShadowLayer;
-@property (strong, nonatomic) CAShapeLayer *verticalDivideShadowLayer;
+@property (nonatomic, strong) CAShapeLayer *freezeColumnSeparatorLayer;
+@property (nonatomic, strong) CAShapeLayer *slideColumnSeparatorLayer;
 
-- (void)setup;
-- (void)setupVars;
-- (void)setupViews;
+@property (nonatomic, strong) UIBezierPath *horizontalDivideShadowPath;
+@property (nonatomic, strong) UIBezierPath *verticalDivideShadowPath;
 
-- (void)handleNotification:(NSNotification *)noti;
+@property (nonatomic, strong) CAShapeLayer *horizontalDivideShadowLayer;
+@property (nonatomic, strong) CAShapeLayer *verticalDivideShadowLayer;
 
-- (void)updateFrame;
+@property (nonatomic) CGFloat columns;
+@property (nonatomic) CGFloat rows;
 
-- (void)showHorizontalDivideShadowLayer;
-- (void)dismissHorizontalDivideShadowLayer;
+@property (nonatomic) CGFloat freezeColumnsWidth;
+@property (nonatomic) CGFloat slideColumnWidth;
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *columnWidths;
 
-- (void)showVerticalDivideShadowLayer;
-- (void)dismissVerticalDivideShadowLayer;
+@property (nonatomic) CGFloat allRowsHeight;
+@property (nonatomic) CGFloat heightForFirstRow;
+@property (nonatomic, strong) NSMutableArray<NSNumber *> *rowHeights;
 
-- (UICollectionView *)initializeCollectionView;
-- (CAShapeLayer *)initializeLayer;
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 @end
 
@@ -55,15 +61,6 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 - (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
-    if (self) {
-        [self setup];
-    }
-    return self;
-}
-
-- (instancetype)init
-{
-    self = [super init];
     if (self) {
         [self setup];
     }
@@ -80,7 +77,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    [self updateFrame];
+    [self updateUI];
 }
 
 - (void)dealloc {
@@ -94,7 +91,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     
     if (orientation != UIDeviceOrientationPortraitUpsideDown) {
         [UIView animateWithDuration:0.25 animations:^{
-            [self updateFrame];
+            [self updateUI];
         }];
     }
 }
@@ -108,23 +105,17 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 }
 
 - (void)setupVars {
-    self.itemMinWidth = 100;
-    self.itemMaxWidth = 150;
-    self.itemHeight = 50;
-    self.horizontalItemTextMargin = 10;
-    self.freezeColumn = 1;
-    self.headerFont = [UIFont systemFontOfSize:17];
-    self.headerTextColor = [UIColor whiteColor];
-    self.headerBackgroundColor = [UIColor grayColor];
-    self.slideBodyFont = self.headerFont;
-    self.slideBodyTextColor = [UIColor blackColor];
-    self.slideBodyBackgroundColor = [UIColor whiteColor];
-    self.freezeBodyFont = self.headerFont;
-    self.freezeBodyTextColor = [UIColor whiteColor];
-    self.freezeBodyBackgroundColor = [UIColor lightGrayColor];
-    self.horizontalSeparatorStyle = BSNumbersSeparatorStyleDotted;
-    self.horizontalSeparatorColor = [UIColor lightGrayColor];
-    self.verticalSeparatorColor = [UIColor lightGrayColor];
+    self.clipsToBounds = YES;
+    
+    _itemMinWidth = 100;
+    _itemMaxWidth = 150;
+    _rowHeight = 50;
+    _textHorizontalMargin = 10;
+    
+    _columnsToFreeze = 1;
+    
+    _rowSeparatorStyle = BSNumbersSeparatorStyleDotted;
+    _columnSeparatorStyle = BSNumbersSeparatorStyleSolid;
 }
 
 - (void)setupViews {
@@ -132,207 +123,186 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     self.clipsToBounds = YES;
     
     [self addSubview:self.headerFreezeCollectionView];
-    [self addSubview:self.freezeCollectionView];
+    [self addSubview:self.bodyFreezeCollectionView];
     
     [self addSubview:self.slideScrollView];
-    [self.slideScrollView addSubview:self.headerSlideCollectionView];
-    [self.slideScrollView addSubview:self.slideCollectionView];
+    [_slideScrollView addSubview:self.headerSlideCollectionView];
+    [_slideScrollView addSubview:self.bodySlideCollectionView];
     
     [self.layer addSublayer:self.horizontalDivideShadowLayer];
-    [self.slideScrollView.layer addSublayer:self.verticalDivideShadowLayer];
+    [self.layer addSublayer:self.verticalDivideShadowLayer];
+    [self.layer addSublayer:self.freezeColumnSeparatorLayer];
+    [_slideScrollView.layer addSublayer:self.slideColumnSeparatorLayer];
 }
 
-- (void)updateFrame {
+- (BOOL)prepareReload {
+    if ([_dataSource respondsToSelector:@selector(numberOfColumnsInNumbersView:)] &&
+        [_dataSource respondsToSelector:@selector(numberOfRowsInNumbersView:)] &&
+        [_dataSource respondsToSelector:@selector(numbersView:attributedStringForItemAtIndexPath:)]) {
+        
+        [self caculate];
+        [self updateUI];
+        
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (void)caculate {
+    
+    _columns = [_dataSource numberOfColumnsInNumbersView:self];
+    _rows = [_dataSource numberOfRowsInNumbersView:self];
+    
+    [self caculateWidths];
+    [self caculateHeights];
+    [self caculateSepartorPath];
+    [self caculateDividePath];
+}
+
+- (void)caculateWidths {
+    _columnWidths = [NSMutableArray array];
+    
+    _freezeColumnsWidth = 0;
+    _slideColumnWidth = 0;
+    
+    //遍历列
+    for (NSInteger column = 0; column < _columns; column ++) {
+        
+        BOOL needCaculate = NO;
+        CGFloat columnWidth = 0;
+        if ([_delegate respondsToSelector:@selector(numbersView:widthForColumn:)]) {
+            columnWidth = [_delegate numbersView:self widthForColumn:column];
+            if (columnWidth == BSNumbersViewAutomaticDimension) {
+                needCaculate = YES;
+            }
+        } else {
+            needCaculate = YES;
+        }
+        
+        if (needCaculate) {
+            columnWidth = 0;
+            //遍历行
+            for (NSInteger row = 0; row < _rows; row ++) {
+                
+                NSIndexPath *indexPath = [NSIndexPath indexPathForColumn:column inRow:row];
+                NSString *string = [_dataSource numbersView:self attributedStringForItemAtIndexPath:indexPath].string;
+                
+                CGFloat itemWidth = 0;
+                if (string.length) {
+                    CGSize stringSize = [string bs_sizeWithFont:[UIFont systemFontOfSize:kDefaultFontSize] constraint:CGSizeMake(_itemMaxWidth, MAXFLOAT)];
+                    itemWidth = stringSize.width + 2 * _textHorizontalMargin;
+                }
+                
+                if (itemWidth >= columnWidth) {
+                    columnWidth = itemWidth;
+                }
+                
+                columnWidth = ceil(MAX(_itemMinWidth, MIN(_itemMaxWidth, columnWidth)));
+            }
+        }
+        
+        [_columnWidths addObject:@(columnWidth)];
+        
+        if (column < _columnsToFreeze) {
+            _freezeColumnsWidth += columnWidth;
+        } else {
+            _slideColumnWidth += columnWidth;
+        }
+    }
+}
+
+- (void)caculateHeights {
+    _rowHeights = [NSMutableArray array];
+    _heightForFirstRow = 0;
+    _allRowsHeight = 0;
+    for (NSInteger row = 0; row < _rows; row ++) {
+        
+        CGFloat rowHeight = _rowHeight;
+        if ([_delegate respondsToSelector:@selector(numbersView:heightForRow:)]) {
+            rowHeight = [_delegate numbersView:self heightForRow:row];
+        }
+        [_rowHeights addObject:@(rowHeight)];
+        
+        if (row == 0) {
+            _heightForFirstRow = rowHeight;
+        }
+        
+        _allRowsHeight += rowHeight;
+    }
+}
+
+- (void)caculateSepartorPath {
+    CGFloat targetWidth = 0;
+    UIBezierPath *freezePath = [UIBezierPath bezierPath];
+    for (NSNumber *columnWidth in [_columnWidths subarrayWithRange:NSMakeRange(0, _columnsToFreeze)]) {
+        targetWidth += columnWidth.floatValue;
+        [freezePath moveToPoint:CGPointMake(targetWidth, 0)];
+        [freezePath addLineToPoint:CGPointMake(targetWidth, _allRowsHeight)];
+    }
+    _freezeColumnSeparatorPath = freezePath;
+    
+    UIBezierPath *slidePath = [UIBezierPath bezierPath];
+    targetWidth = 0;
+    for (NSNumber *columnWidth in [_columnWidths subarrayWithRange:NSMakeRange(_columnsToFreeze, _columnWidths.count - _columnsToFreeze - 1)]) {
+        targetWidth += columnWidth.floatValue;
+        [slidePath moveToPoint:CGPointMake(targetWidth, 0)];
+        [slidePath addLineToPoint:CGPointMake(targetWidth, _allRowsHeight)];
+    }
+    _slideColumnSeparatorPath = slidePath;
+}
+
+- (void)caculateDividePath {
+    CGFloat contentWidth = _freezeColumnsWidth + _slideColumnWidth;
+    _horizontalDivideShadowPath = [UIBezierPath bezierPath];
+    [_horizontalDivideShadowPath moveToPoint:CGPointMake(0, _heightForFirstRow)];
+    [_horizontalDivideShadowPath addLineToPoint:CGPointMake(contentWidth, _heightForFirstRow)];
+    
+    CGFloat contentHeight = _allRowsHeight;
+    _verticalDivideShadowPath = [UIBezierPath bezierPath];
+    [_verticalDivideShadowPath moveToPoint:CGPointMake(_freezeColumnsWidth, 0)];
+    [_verticalDivideShadowPath addLineToPoint:CGPointMake(_freezeColumnsWidth, contentHeight)];
+}
+
+- (void)updateUI {
     CGFloat width = self.bounds.size.width;
     CGFloat height = self.bounds.size.height;
     
-    
-    if (self.headerData) {
-        CGFloat headerHeight = self.itemHeight;
+    if (_isFreezeFirstRow) {
         
-        self.headerFreezeCollectionView.frame = CGRectMake(0,
-                                                           0,
-                                                           self.dataManager.freezeWidth ,
-                                                           headerHeight);
-        self.freezeCollectionView.frame = CGRectMake(0,
-                                                     headerHeight,
-                                                     self.dataManager.freezeWidth,
-                                                     height - headerHeight);
+        _headerFreezeCollectionView.frame = CGRectMake(0, 0,
+                                                       _freezeColumnsWidth , _heightForFirstRow);
         
-        self.slideScrollView.frame = CGRectMake(self.dataManager.freezeWidth,
-                                                  0,
-                                                  width - self.dataManager.freezeWidth,
-                                                  height);
-        self.slideScrollView.contentSize = CGSizeMake(self.dataManager.slideWidth,
-                                                        height);
+        _bodyFreezeCollectionView.frame = CGRectMake(0, _heightForFirstRow,
+                                                     _freezeColumnsWidth, height - _heightForFirstRow);
         
-        self.headerSlideCollectionView.frame = CGRectMake(0,
-                                                            0,
-                                                            self.dataManager.slideWidth,
-                                                            headerHeight);
-        self.slideCollectionView.frame = CGRectMake(0,
-                                                      headerHeight,
-                                                      self.dataManager.slideWidth,
-                                                      height - headerHeight);
+        _headerSlideCollectionView.frame = CGRectMake(0, 0,
+                                                      _slideColumnWidth, _heightForFirstRow);
+        
+        _bodySlideCollectionView.frame = CGRectMake(0, _heightForFirstRow,
+                                                    _slideColumnWidth, height - _heightForFirstRow);
         
     } else {
         
-        self.freezeCollectionView.frame = CGRectMake(0,
-                                                     0,
-                                                     self.dataManager.freezeWidth,
-                                                     height);
-        self.slideScrollView.frame = CGRectMake(self.dataManager.freezeWidth,
-                                                  0,
-                                                  width - self.dataManager.freezeWidth,
-                                                  height);
-        self.slideScrollView.contentSize = CGSizeMake(self.dataManager.slideWidth,
-                                                        height);
-        self.slideCollectionView.frame = CGRectMake(0,
-                                                      0,
-                                                      self.dataManager.slideWidth,
-                                                      height);
-    }
-
-}
-
-- (void)showHorizontalDivideShadowLayer {
-    if (self.horizontalDivideShadowLayer.path == nil) {
+        _bodyFreezeCollectionView.frame = CGRectMake(0, 0,
+                                                     _freezeColumnsWidth, height);
         
-        UIBezierPath *path = [UIBezierPath bezierPath];
-        [path moveToPoint:CGPointMake(0, self.itemHeight)];
-        [path addLineToPoint:CGPointMake(MIN(self.bounds.size.width, self.dataManager.freezeWidth + self.dataManager.slideWidth), self.itemHeight)];
-        path.lineWidth = 0.5;
-        
-        self.horizontalDivideShadowLayer.path = path.CGPath;
-    }
-}
-
-- (void)dismissHorizontalDivideShadowLayer {
-    self.horizontalDivideShadowLayer.path = nil;
-}
-
-- (void)showVerticalDivideShadowLayer {
-    if (self.verticalDivideShadowLayer.path == nil) {
-        
-        CGFloat height = self.freezeCollectionView.contentSize.height + self.headerFreezeCollectionView.contentSize.height;
-        UIBezierPath *path = [UIBezierPath bezierPath];
-        [path moveToPoint:CGPointMake(0, 0)];
-        [path addLineToPoint:CGPointMake(0, height)];
-        path.lineWidth = 0.5;
-        
-        self.verticalDivideShadowLayer.path = path.CGPath;
-    }
-}
-
-- (void)dismissVerticalDivideShadowLayer {
-    self.verticalDivideShadowLayer.path = nil;
-}
-
-#pragma mark - Public
-
-- (void)reloadData {
-    [self.dataManager caculate];
-    [self updateFrame];
-    
-    [self.headerFreezeCollectionView reloadData];
-    [self.headerSlideCollectionView reloadData];
-    [self.freezeCollectionView reloadData];
-    [self.slideCollectionView reloadData];
-}
-
-- (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
-    
-    [self.dataManager caculate];
-    [self updateFrame];
-    
-    NSMutableArray *headerFreezeIndexPaths = [NSMutableArray new];
-    NSMutableArray *headerSlideIndexPaths = [NSMutableArray new];
-    NSMutableArray *freezeIndexPaths = [NSMutableArray new];
-    NSMutableArray *slideIndexPaths = [NSMutableArray new];
-    
-    for (NSIndexPath *indexPath in indexPaths) {
-        
-        //exsit header
-        if (self.headerData) {
-            //if header
-            if (indexPath.section == 0) {
-                
-                //if freeze
-                if (indexPath.row < self.freezeColumn) {
-                    
-                    [headerFreezeIndexPaths addObject:indexPath];
-
-                } else {
-                    
-                    [headerSlideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row - self.freezeColumn inSection:indexPath.section]];
-                }
-                //body
-            } else {
-                
-                //if freeze
-                if (indexPath.row < self.freezeColumn) {
-                    
-                    [freezeIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1]];
-                } else {
-                    
-                    [slideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row - self.freezeColumn inSection:indexPath.section - 1]];
-                }
-            }
-            
-            //body only
-        } else {
-            //if freeze
-            if (indexPath.row < self.freezeColumn) {
-                
-                [freezeIndexPaths addObject:indexPath];
-            } else {
-                
-                [slideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.row - self.freezeColumn inSection:indexPath.section]];
-            }
-        }
+        _bodySlideCollectionView.frame = CGRectMake(0, 0,
+                                                    _slideColumnWidth, height);
     }
     
-    [self.headerFreezeCollectionView reloadItemsAtIndexPaths:headerFreezeIndexPaths];
-    [self.headerSlideCollectionView reloadItemsAtIndexPaths:headerSlideIndexPaths];
-    [self.freezeCollectionView reloadItemsAtIndexPaths:freezeIndexPaths];
-    [self.slideCollectionView reloadItemsAtIndexPaths:slideIndexPaths];
-}
-
-- (CGSize)sizeForRow:(NSInteger)row {
+    _slideScrollView.frame = CGRectMake(_freezeColumnsWidth, 0,
+                                        width - _freezeColumnsWidth, height);
+    _slideScrollView.contentSize = CGSizeMake(_slideColumnWidth, height);
     
-    if (row < self.freezeColumn) {
-        return CGSizeFromString(self.dataManager.freezeItemSize[row]);
-    } else {
-        return CGSizeFromString(self.dataManager.slideItemSize[row - self.freezeColumn]);
-    }
-}
-
-- (NSString *)textAtIndexPath:(NSIndexPath *)indexPath {
+    _slideColumnSeparatorLayer.path = _slideColumnSeparatorPath.CGPath;
+    _freezeColumnSeparatorLayer.path = _freezeColumnSeparatorPath.CGPath;
     
-    if (indexPath.section == 0) {
-        if (indexPath.row < self.freezeColumn) {
-            return self.dataManager.headerFreezeData[indexPath.row];
-        } else {
-            return self.dataManager.headerSlideData[indexPath.row - self.freezeColumn];
-        }
-    } else {
-        if (indexPath.row < self.freezeColumn) {
-            return self.dataManager.bodyFreezeData[indexPath.section - 1][indexPath.row];
-        } else {
-            return self.dataManager.bodySlideData[indexPath.section - 1][indexPath.row- self.freezeColumn];
-        }
-    }
+    _horizontalDivideShadowLayer.path = _horizontalDivideShadowPath.CGPath;
+    _verticalDivideShadowLayer.path = _verticalDivideShadowPath.CGPath;
 }
 
 #pragma mark - Getter
-
-- (BSNumbersDataManager *)dataManager {
-    if (!_dataManager) {
-        _dataManager = [BSNumbersDataManager new];
-        _dataManager.numbersView = self;
-    }
-    return _dataManager;
-}
 
 - (UICollectionView *)headerFreezeCollectionView {
     if (!_headerFreezeCollectionView) {
@@ -341,25 +311,11 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     return _headerFreezeCollectionView;
 }
 
-- (UICollectionView *)headerSlideCollectionView {
-    if (!_headerSlideCollectionView) {
-        _headerSlideCollectionView = [self initializeCollectionView];
+- (UICollectionView *)bodyFreezeCollectionView {
+    if (!_bodyFreezeCollectionView) {
+        _bodyFreezeCollectionView = [self initializeCollectionView];
     }
-    return _headerSlideCollectionView;
-}
-
-- (UICollectionView *)freezeCollectionView {
-    if (!_freezeCollectionView) {
-        _freezeCollectionView = [self initializeCollectionView];
-    }
-    return _freezeCollectionView;
-}
-
-- (UICollectionView *)slideCollectionView {
-    if (!_slideCollectionView) {
-        _slideCollectionView = [self initializeCollectionView];
-    }
-    return _slideCollectionView;
+    return _bodyFreezeCollectionView;
 }
 
 - (UIScrollView *)slideScrollView {
@@ -372,10 +328,43 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     return _slideScrollView;
 }
 
+- (UICollectionView *)headerSlideCollectionView {
+    if (!_headerSlideCollectionView) {
+        _headerSlideCollectionView = [self initializeCollectionView];
+    }
+    return _headerSlideCollectionView;
+}
+
+- (UICollectionView *)bodySlideCollectionView {
+    if (!_bodySlideCollectionView) {
+        _bodySlideCollectionView = [self initializeCollectionView];
+    }
+    return _bodySlideCollectionView;
+}
+
+- (CAShapeLayer *)freezeColumnSeparatorLayer {
+    if (!_freezeColumnSeparatorLayer) {
+        _freezeColumnSeparatorLayer = [self initializeLayer];
+        _freezeColumnSeparatorLayer.shadowOpacity = 0;
+        _freezeColumnSeparatorLayer.lineWidth = k1PxSize;
+    }
+    return _freezeColumnSeparatorLayer;
+}
+
+- (CAShapeLayer *)slideColumnSeparatorLayer {
+    if (!_slideColumnSeparatorLayer) {
+        _slideColumnSeparatorLayer = [self initializeLayer];
+        _slideColumnSeparatorLayer.shadowOpacity = 0;
+        _slideColumnSeparatorLayer.lineWidth = k1PxSize;
+    }
+    return _slideColumnSeparatorLayer;
+}
+
 - (CAShapeLayer *)horizontalDivideShadowLayer {
     if (!_horizontalDivideShadowLayer) {
         _horizontalDivideShadowLayer = [self initializeLayer];
         _horizontalDivideShadowLayer.shadowOffset = CGSizeMake(0, 3);
+        _horizontalDivideShadowLayer.hidden = YES;
     }
     return _horizontalDivideShadowLayer;
 }
@@ -383,6 +372,7 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 - (CAShapeLayer *)verticalDivideShadowLayer {
     if (!_verticalDivideShadowLayer) {
         _verticalDivideShadowLayer = [self initializeLayer];
+        _verticalDivideShadowLayer.hidden = YES;
     }
     return _verticalDivideShadowLayer;
 }
@@ -393,7 +383,6 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     UICollectionViewFlowLayout *flowLayout = [UICollectionViewFlowLayout new];
     flowLayout.minimumLineSpacing = 0;
     flowLayout.minimumInteritemSpacing = 0;
-    flowLayout.headerReferenceSize = CGSizeMake([UIScreen mainScreen].bounds.size.width, 1);
     
     UICollectionView *c = [[UICollectionView alloc]initWithFrame:CGRectZero collectionViewLayout:flowLayout];
     c.dataSource = self;
@@ -413,145 +402,66 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     s.shadowColor = [UIColor blackColor].CGColor;
     s.shadowOffset = CGSizeMake(2, 0);
     s.shadowOpacity = 1;
+    s.lineWidth = k1PxSize;
     return s;
 }
 
-- (BOOL)didImplementation:(SEL)aSelector {
+- (NSIndexPath *)convertIndexPath:(NSIndexPath *)indexPath fromCollectionView:(UICollectionView *)collectionView {
     
-    if (self.delegate && [self.delegate conformsToProtocol:@protocol(BSNumbersViewDelegate)]) {
-        if ([self.delegate respondsToSelector:aSelector]) {
-            return YES;
-        }
-        return NO;
+    NSInteger row = 0;
+    NSInteger column = 0;
+    if (collectionView == _headerFreezeCollectionView) {
+        row = indexPath.section;
+        column = indexPath.item;
+    } else if (collectionView == _headerSlideCollectionView) {
+        row = indexPath.section;
+        column = indexPath.item + _columnsToFreeze;
+    } else if (collectionView == _bodyFreezeCollectionView) {
+        row = indexPath.section + (_isFreezeFirstRow ? 1 : 0);
+        column = indexPath.item;
+    } else if (collectionView == _bodySlideCollectionView){
+        row = indexPath.section + (_isFreezeFirstRow ? 1 : 0);
+        column = indexPath.item + _columnsToFreeze;
     }
-    return NO;
-}
-
-- (void)useCustomViewIfNeededInCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    if ([self didImplementation:@selector(numbersView:viewAtIndexPath:)]) {
-        UIView *customView = [self.delegate numbersView:self viewAtIndexPath:indexPath];
-        if (customView) {
-            cell.customView = customView;
-        }
-    }
-}
-
-- (void)useAttributedStringIfNeededInCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    if ([self didImplementation:@selector(numbersView:attributedStringAtIndexPath:)]) {
-        NSAttributedString *attributedString = [self.delegate numbersView:self attributedStringAtIndexPath:indexPath];
-        if (attributedString) {
-            cell.label.attributedText = attributedString;
-            return;
-        }
-    }
-}
-
-#pragma mark - Cell Configuration
-
-- (void)configureHeaderFreezeCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSString *text = self.dataManager.headerFreezeData[indexPath.row];
-    cell.label.text = text;
-    cell.backgroundColor = self.headerBackgroundColor;
-    cell.label.textColor = self.headerTextColor;
-    cell.label.font = self.headerFont;
     
-    [self useCustomViewIfNeededInCell:cell indexPath:indexPath];
-    
-    [self useAttributedStringIfNeededInCell:cell indexPath:indexPath];
-}
-
-- (void)configureHeaderSlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    
-    NSString *text = self.dataManager.headerSlideData[indexPath.row];
-    cell.label.text = text;
-    cell.backgroundColor = self.headerBackgroundColor;
-    cell.label.textColor = self.headerTextColor;
-    cell.label.font = self.headerFont;
-    
-    NSIndexPath *targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + self.freezeColumn inSection:indexPath.section];
-    
-    [self useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
-    
-    [self useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
-}
-
-- (void)configureBodyFreezeCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-
-    NSString *text = self.dataManager.bodyFreezeData[indexPath.section][indexPath.row];
-    cell.label.text = text;
-    cell.backgroundColor = self.freezeBodyBackgroundColor;
-    cell.label.textColor = self.freezeBodyTextColor;
-    cell.label.font = self.freezeBodyFont;
-    
-    NSIndexPath *targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section + 1];
-    
-    [self useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
-    
-    [self useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
-}
-
-- (void)configureBodySlideCell:(BSNumbersCollectionCell *)cell indexPath:(NSIndexPath *)indexPath {
-    NSString *text = self.dataManager.bodySlideData[indexPath.section][indexPath.row];
-    cell.label.text = text;
-    cell.backgroundColor = self.slideBodyBackgroundColor;
-    cell.label.textColor = self.slideBodyTextColor;
-    cell.label.font = self.slideBodyFont;
-    
-    NSIndexPath *targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + self.freezeColumn inSection:indexPath.section + 1];
-    
-    [self useCustomViewIfNeededInCell:cell indexPath:targetIndexPath];
-    
-    [self useAttributedStringIfNeededInCell:cell indexPath:targetIndexPath];
+    return [NSIndexPath indexPathForColumn:column inRow:row];
 }
 
 #pragma mark - UICollectionViewDataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    if (collectionView == self.headerFreezeCollectionView ||
-        collectionView == self.headerSlideCollectionView) {
-        return 1;
+    
+    CGFloat numbersOfSectionsInHeader = (_isFreezeFirstRow ? 1 : 0);
+    if (collectionView == _headerFreezeCollectionView ||
+        collectionView == _headerSlideCollectionView) {
+        return numbersOfSectionsInHeader;
     } else {
-        return self.bodyData.count;
+        return [_dataSource numberOfRowsInNumbersView:self] - numbersOfSectionsInHeader;
     }
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
 
-    if (collectionView == self.headerFreezeCollectionView ||
-        collectionView == self.freezeCollectionView) {
-        return self.freezeColumn;
+    if (collectionView == _headerFreezeCollectionView ||
+        collectionView == _bodyFreezeCollectionView) {
+        return _columnsToFreeze;
     } else {
-        NSObject *firstBodyData = self.bodyData.firstObject;
-        NSInteger slideColumn = firstBodyData.bs_propertyValues.count - self.freezeColumn;
-        return slideColumn;
+        return [_dataSource numberOfColumnsInNumbersView:self] - _columnsToFreeze;
     }
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    BSNumbersCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:CellReuseIdentifer forIndexPath:indexPath];
-    cell.horizontalMargin = self.horizontalItemTextMargin;
     
-    if (collectionView == self.headerFreezeCollectionView) {
-        [self configureHeaderFreezeCell:cell indexPath:indexPath];
-    } else if (collectionView == self.headerSlideCollectionView) {
-        [self configureHeaderSlideCell:cell indexPath:indexPath];
-    } else if (collectionView == self.freezeCollectionView) {
-        [self configureBodyFreezeCell:cell indexPath:indexPath];
-    } else {
-        [self configureBodySlideCell:cell indexPath:indexPath];
+    NSIndexPath *convertedIndexPath = [self convertIndexPath:indexPath fromCollectionView:collectionView];
+    UICollectionViewCell *cell = nil;
+    if ([_dataSource respondsToSelector:@selector(numbersView:cellForItemAtIndexPath:)]) {
+        cell = [_dataSource numbersView:self cellForItemAtIndexPath:convertedIndexPath];
     }
-    
-    cell.separatorColor = self.verticalSeparatorColor;
-    cell.separatorHidden = NO;
-    NSInteger valuesCount = self.bodyData.firstObject.bs_propertyValues.count;
-    if (valuesCount == self.freezeColumn) {
-        if (indexPath.row == self.freezeColumn - 1) {
-            cell.separatorHidden = YES;
-        }
-    } else {
-        if (indexPath.row == valuesCount - self.freezeColumn - 1) {
-            cell.separatorHidden = YES;
-        }
+    if (!cell) {
+        cell = [collectionView dequeueReusableCellWithReuseIdentifier:CellReuseIdentifer forIndexPath:indexPath];
+        ((BSNumbersCollectionCell *)cell).textHorizontalMargin = _textHorizontalMargin;
+        
+        ((BSNumbersCollectionCell *)cell).attributedString = [_dataSource numbersView:self attributedStringForItemAtIndexPath:convertedIndexPath];
     }
     return cell;
 }
@@ -560,19 +470,9 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
     
     if ([kind isEqualToString:UICollectionElementKindSectionHeader]) {
         BSNumbersCollectionHeaderView *headerView = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:HeaderReuseIdentifer forIndexPath:indexPath];
-        headerView.separatorStyle = self.horizontalSeparatorStyle;
-        headerView.separatorColor = self.horizontalSeparatorColor;
+        headerView.rowSeparatorStyle = _rowSeparatorStyle;
+        headerView.rowSeparatorColor = _rowSeparatorColor;
         
-        if (indexPath.section == 0) {
-            if (self.headerData != nil) {
-                if (collectionView == self.headerFreezeCollectionView ||
-                    collectionView == self.headerSlideCollectionView) {
-                    headerView.separatorStyle = BSNumbersSeparatorStyleNone;
-                }
-            } else {
-                headerView.separatorStyle = BSNumbersSeparatorStyleNone;
-            }
-        }
         return headerView;
     } else {
         return nil;
@@ -582,18 +482,16 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 #pragma mark - UICollectionViewDelegateFlowLayout
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (self.bodyData.count == 0) {
+    NSIndexPath *convertedIndexPath = [self convertIndexPath:indexPath fromCollectionView:collectionView];
+    return CGSizeMake(_columnWidths[convertedIndexPath.column].floatValue, _rowHeights[convertedIndexPath.row].floatValue);
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section {
+    BOOL isFreezeCollectionView = (collectionView == _headerFreezeCollectionView) || (collectionView == _headerSlideCollectionView);
+    if (section == 0 && isFreezeCollectionView) {
         return CGSizeZero;
     } else {
-        if (collectionView == self.headerFreezeCollectionView ||
-            collectionView == self.freezeCollectionView) {
-
-            return CGSizeFromString(self.dataManager.freezeItemSize[indexPath.row]);
-        } else {
-            
-            return CGSizeFromString(self.dataManager.slideItemSize[indexPath.row]);
-        }
+        return CGSizeMake(collectionView.bounds.size.width, 1);
     }
 }
 
@@ -601,48 +499,231 @@ NSString * const HeaderReuseIdentifer = @"BSNumbersCollectionHeaderView";
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    if (![self didImplementation:@selector(numbersView:didSelectItemAtIndexPath:)]) {
+    if (![_delegate respondsToSelector:@selector(numbersView:didSelectItemAtIndexPath:)]) {
         return;
     }
     
-    NSIndexPath *targetIndexPath = indexPath;
-    if (collectionView == self.headerFreezeCollectionView) {
-        
-    } else if (collectionView == self.headerSlideCollectionView) {
-        targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + self.freezeColumn inSection:indexPath.section];
-    } else if (collectionView == self.freezeCollectionView) {
-        targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section + 1];
-    } else {
-        targetIndexPath = [NSIndexPath indexPathForRow:indexPath.row + self.freezeColumn inSection:indexPath.section + 1];
-    }
-    [self.delegate numbersView:self didSelectItemAtIndexPath:targetIndexPath];
+    NSIndexPath *convertedIndexPath = [self convertIndexPath:indexPath fromCollectionView:collectionView];
+    [_delegate numbersView:self didSelectItemAtIndexPath:convertedIndexPath];
 }
 
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (scrollView != self.slideScrollView) {
-        [self.freezeCollectionView setContentOffset:scrollView.contentOffset];
-        [self.slideCollectionView setContentOffset:scrollView.contentOffset];
+    if (scrollView != _slideScrollView) {
+        [_bodyFreezeCollectionView setContentOffset:scrollView.contentOffset];
+        [_bodySlideCollectionView setContentOffset:scrollView.contentOffset];
         
         if (scrollView.contentOffset.y > 0) {
-            [self showHorizontalDivideShadowLayer];
+            _horizontalDivideShadowLayer.hidden = !_isFreezeFirstRow;
         } else {
-            [self dismissHorizontalDivideShadowLayer];
+            _horizontalDivideShadowLayer.hidden = YES;
         }
         
     } else {
         if (scrollView.contentOffset.x > 0) {
-            [self showVerticalDivideShadowLayer];
+            _verticalDivideShadowLayer.hidden = (_columnsToFreeze == 0);
         } else {
-            [self dismissVerticalDivideShadowLayer];
+            _verticalDivideShadowLayer.hidden = YES;
         }
-        [CATransaction begin];
-        [CATransaction setDisableActions:YES];
-        self.verticalDivideShadowLayer.transform = CATransform3DMakeTranslation(scrollView.contentOffset.x, 0, 0);
-        [CATransaction commit];
-        
     }
+}
+
+#pragma mark - Setter
+
+- (void)setRowSeparatorStyle:(BSNumbersSeparatorStyle)rowSeparatorStyle {
+    if (_rowSeparatorStyle != rowSeparatorStyle) {
+        _rowSeparatorStyle = rowSeparatorStyle;
+        [self reloadData];
+    }
+}
+
+- (void)setRowSeparatorColor:(UIColor *)rowSeparatorColor {
+    if (_rowSeparatorColor != rowSeparatorColor) {
+        _rowSeparatorColor = rowSeparatorColor;
+        [self reloadData];
+    }
+}
+
+- (void)setColumnSeparatorStyle:(BSNumbersSeparatorStyle)columnSeparatorStyle {
+    if (_columnSeparatorStyle != columnSeparatorStyle) {
+        _columnSeparatorStyle = columnSeparatorStyle;
+        _slideColumnSeparatorLayer.hidden = NO;
+        _freezeColumnSeparatorLayer.hidden = NO;
+        if (columnSeparatorStyle == BSNumbersSeparatorStyleNone) {
+            _slideColumnSeparatorLayer.hidden = YES;
+            _freezeColumnSeparatorLayer.hidden = YES;
+        } else if (columnSeparatorStyle == BSNumbersSeparatorStyleDotted) {
+            _slideColumnSeparatorLayer.lineDashPattern = @[@2];
+            _freezeColumnSeparatorLayer.lineDashPattern = @[@2];
+        } else if (columnSeparatorStyle == BSNumbersSeparatorStyleSolid){
+            _slideColumnSeparatorLayer.lineDashPattern = nil;
+            _freezeColumnSeparatorLayer.lineDashPattern = nil;
+        }
+    }
+}
+
+- (void)setColumnSeparatorColor:(UIColor *)columnSeparatorColor {
+    if (_columnSeparatorColor != columnSeparatorColor) {
+        _columnSeparatorColor = columnSeparatorColor;
+        _slideColumnSeparatorLayer.strokeColor = columnSeparatorColor.CGColor;
+        _freezeColumnSeparatorLayer.strokeColor = columnSeparatorColor.CGColor;
+    }
+}
+
+#pragma mark - Public
+
+- (void)reloadData {
+    
+    if (![self prepareReload]) {
+        return;
+    }
+    
+    [_headerFreezeCollectionView reloadData];
+    [_headerSlideCollectionView reloadData];
+    [_bodyFreezeCollectionView reloadData];
+    [_bodySlideCollectionView reloadData];
+}
+
+- (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths {
+    
+
+    NSMutableArray *headerFreezeIndexPaths = [NSMutableArray new];
+    NSMutableArray *headerSlideIndexPaths = [NSMutableArray new];
+    NSMutableArray *freezeIndexPaths = [NSMutableArray new];
+    NSMutableArray *slideIndexPaths = [NSMutableArray new];
+    
+    for (NSIndexPath *indexPath in indexPaths) {
+        //exsit header
+        if (_isFreezeFirstRow) {
+            //if header
+            if (indexPath.row == 0) {
+                
+                //if freeze
+                if (indexPath.column < _columnsToFreeze) {
+                    
+                    [headerFreezeIndexPaths addObject:indexPath];
+                    
+                } else {
+                    
+                    [headerSlideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.column - _columnsToFreeze inSection:indexPath.row]];
+                }
+                //body
+            } else {
+                
+                //if freeze
+                if (indexPath.row < _columnsToFreeze) {
+                    
+                    [freezeIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.column inSection:indexPath.row - 1]];
+                } else {
+                    
+                    [slideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.column - _columnsToFreeze inSection:indexPath.row - 1]];
+                }
+            }
+            
+            //body only
+        } else {
+            //if freeze
+            if (indexPath.column < _columnsToFreeze) {
+                
+                [freezeIndexPaths addObject:indexPath];
+            } else {
+                
+                [slideIndexPaths addObject:[NSIndexPath indexPathForRow:indexPath.column - _columnsToFreeze inSection:indexPath.row]];
+            }
+        }
+    }
+    
+    if (![self prepareReload]) {
+        return;
+    }
+    
+    [_headerFreezeCollectionView reloadItemsAtIndexPaths:headerFreezeIndexPaths];
+    [_headerSlideCollectionView reloadItemsAtIndexPaths:headerSlideIndexPaths];
+    [_bodyFreezeCollectionView reloadItemsAtIndexPaths:freezeIndexPaths];
+    [_bodySlideCollectionView reloadItemsAtIndexPaths:slideIndexPaths];
+}
+
+- (void)registerClass:(Class)cellClass forCellWithReuseIdentifier:(NSString *)identifier {
+    [_headerFreezeCollectionView registerClass:cellClass forCellWithReuseIdentifier:identifier];
+    [_headerSlideCollectionView registerClass:cellClass forCellWithReuseIdentifier:identifier];
+    [_bodyFreezeCollectionView registerClass:cellClass forCellWithReuseIdentifier:identifier];
+    [_bodySlideCollectionView registerClass:cellClass forCellWithReuseIdentifier:identifier];
+}
+
+- (void)registerNib:(UINib *)nib forCellWithReuseIdentifier:(NSString *)identifier {
+    [_headerFreezeCollectionView registerNib:nib forCellWithReuseIdentifier:identifier];
+    [_headerSlideCollectionView registerNib:nib forCellWithReuseIdentifier:identifier];
+    [_bodyFreezeCollectionView registerNib:nib forCellWithReuseIdentifier:identifier];
+    [_bodySlideCollectionView registerNib:nib forCellWithReuseIdentifier:identifier];
+}
+
+- (UICollectionViewCell *)dequeueReusableCellWithReuseIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath {
+    NSInteger row = 0;
+    NSInteger column = 0;
+    UICollectionView *collectionView = nil;
+    if (_isFreezeFirstRow) {
+        
+        if (indexPath.row < 1) {
+            if (indexPath.column < _columnsToFreeze) {
+                collectionView = _headerFreezeCollectionView;
+                row = indexPath.row;
+                column = indexPath.column;
+                
+            } else {
+                collectionView = _headerSlideCollectionView;
+                row = indexPath.row;
+                column = indexPath.column - _columnsToFreeze;
+            }
+        } else {
+            if (indexPath.column < _columnsToFreeze) {
+                collectionView = _bodyFreezeCollectionView;
+                row = indexPath.row - 1;
+                column = indexPath.column;
+            } else {
+                collectionView = _bodySlideCollectionView;
+                row = indexPath.row - 1;
+                column = indexPath.column - _columnsToFreeze;
+            }
+        }
+        
+    } else {
+        
+        if (indexPath.column < _columnsToFreeze) {
+            collectionView = _bodyFreezeCollectionView;
+            row = indexPath.row;
+            column = indexPath.column;
+        } else {
+            collectionView = _bodySlideCollectionView;
+            row = indexPath.row;
+            column = indexPath.column - _columnsToFreeze;
+        }
+    }
+    return [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:[NSIndexPath indexPathForColumn:column inRow:row]];
+}
+
+
+@end
+
+@implementation NSIndexPath (BSNumbersView)
+
++ (instancetype)indexPathForColumn:(NSInteger)column inRow:(NSInteger)row {
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+    indexPath.column = column;
+    return indexPath;
+}
+
+- (void)setColumn:(NSInteger)column {
+    objc_setAssociatedObject(self, @selector(column), @(column), OBJC_ASSOCIATION_ASSIGN);
+}
+
+- (NSInteger)column {
+    NSNumber *columnNumber = objc_getAssociatedObject(self, _cmd);
+    return columnNumber.integerValue;
+}
+
+- (NSString *)bs_description {
+    return [NSString stringWithFormat:@"row = %ld, column = %ld", (long)self.row, (long)self.column];
 }
 
 @end

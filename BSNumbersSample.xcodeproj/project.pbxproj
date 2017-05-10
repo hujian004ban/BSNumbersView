@@ -17,10 +17,11 @@
 		84032C961CB4F17900F080D2 /* Flight.m in Sources */ = {isa = PBXBuildFile; fileRef = 84032C951CB4F17900F080D2 /* Flight.m */; };
 		84ECB2911CE1EF9700D4CD87 /* BSNumbersCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB2861CE1EF9700D4CD87 /* BSNumbersCollectionCell.m */; };
 		84ECB2921CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB2881CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.m */; };
-		84ECB2931CE1EF9700D4CD87 /* BSNumbersDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB28A1CE1EF9700D4CD87 /* BSNumbersDataManager.m */; };
 		84ECB2941CE1EF9700D4CD87 /* BSNumbersView.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB28C1CE1EF9700D4CD87 /* BSNumbersView.m */; };
-		84ECB2951CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB28E1CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.m */; };
-		84ECB2961CE1EF9700D4CD87 /* NSString+BSNumbersExtension.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB2901CE1EF9700D4CD87 /* NSString+BSNumbersExtension.m */; };
+		84ECB2951CE1EF9700D4CD87 /* NSObject+Extension.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB28E1CE1EF9700D4CD87 /* NSObject+Extension.m */; };
+		84ECB2961CE1EF9700D4CD87 /* NSString+BSNumbers.m in Sources */ = {isa = PBXBuildFile; fileRef = 84ECB2901CE1EF9700D4CD87 /* NSString+BSNumbers.m */; };
+		84EDA3BD1EB89471008A99D9 /* SampleCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 84EDA3BB1EB89471008A99D9 /* SampleCollectionCell.m */; };
+		84EDA3BE1EB89471008A99D9 /* SampleCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84EDA3BC1EB89471008A99D9 /* SampleCollectionCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,14 +42,17 @@
 		84ECB2861CE1EF9700D4CD87 /* BSNumbersCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BSNumbersCollectionCell.m; sourceTree = "<group>"; };
 		84ECB2871CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSNumbersCollectionHeaderView.h; sourceTree = "<group>"; };
 		84ECB2881CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BSNumbersCollectionHeaderView.m; sourceTree = "<group>"; };
-		84ECB2891CE1EF9700D4CD87 /* BSNumbersDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSNumbersDataManager.h; sourceTree = "<group>"; };
-		84ECB28A1CE1EF9700D4CD87 /* BSNumbersDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BSNumbersDataManager.m; sourceTree = "<group>"; };
 		84ECB28B1CE1EF9700D4CD87 /* BSNumbersView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSNumbersView.h; sourceTree = "<group>"; };
 		84ECB28C1CE1EF9700D4CD87 /* BSNumbersView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BSNumbersView.m; sourceTree = "<group>"; };
-		84ECB28D1CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+BSNumbersExtension.h"; sourceTree = "<group>"; };
-		84ECB28E1CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+BSNumbersExtension.m"; sourceTree = "<group>"; };
-		84ECB28F1CE1EF9700D4CD87 /* NSString+BSNumbersExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+BSNumbersExtension.h"; sourceTree = "<group>"; };
-		84ECB2901CE1EF9700D4CD87 /* NSString+BSNumbersExtension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+BSNumbersExtension.m"; sourceTree = "<group>"; };
+		84ECB28D1CE1EF9700D4CD87 /* NSObject+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSObject+Extension.h"; path = "BSNumbersView/NSObject+Extension.h"; sourceTree = "<group>"; };
+		84ECB28E1CE1EF9700D4CD87 /* NSObject+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSObject+Extension.m"; path = "BSNumbersView/NSObject+Extension.m"; sourceTree = "<group>"; };
+		84ECB28F1CE1EF9700D4CD87 /* NSString+BSNumbers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+BSNumbers.h"; sourceTree = "<group>"; };
+		84ECB2901CE1EF9700D4CD87 /* NSString+BSNumbers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+BSNumbers.m"; sourceTree = "<group>"; };
+		84EDA3A61EB04948008A99D9 /* BSNumbersViewMarcos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSNumbersViewMarcos.h; sourceTree = "<group>"; };
+		84EDA3B61EB1991F008A99D9 /* BSNumbersViewEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BSNumbersViewEnum.h; sourceTree = "<group>"; };
+		84EDA3BA1EB89471008A99D9 /* SampleCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleCollectionCell.h; sourceTree = "<group>"; };
+		84EDA3BB1EB89471008A99D9 /* SampleCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SampleCollectionCell.m; sourceTree = "<group>"; };
+		84EDA3BC1EB89471008A99D9 /* SampleCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SampleCollectionCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +89,11 @@
 				84032C7D1CB4F13100F080D2 /* AppDelegate.m */,
 				84032C7F1CB4F13100F080D2 /* ViewController.h */,
 				84032C801CB4F13100F080D2 /* ViewController.m */,
+				84ECB28D1CE1EF9700D4CD87 /* NSObject+Extension.h */,
+				84ECB28E1CE1EF9700D4CD87 /* NSObject+Extension.m */,
+				84EDA3BA1EB89471008A99D9 /* SampleCollectionCell.h */,
+				84EDA3BB1EB89471008A99D9 /* SampleCollectionCell.m */,
+				84EDA3BC1EB89471008A99D9 /* SampleCollectionCell.xib */,
 				84ECB2841CE1EF9700D4CD87 /* BSNumbersView */,
 				84032C931CB4F16E00F080D2 /* Model */,
 				84032C821CB4F13100F080D2 /* Main.storyboard */,
@@ -121,14 +130,12 @@
 				84ECB2861CE1EF9700D4CD87 /* BSNumbersCollectionCell.m */,
 				84ECB2871CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.h */,
 				84ECB2881CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.m */,
-				84ECB2891CE1EF9700D4CD87 /* BSNumbersDataManager.h */,
-				84ECB28A1CE1EF9700D4CD87 /* BSNumbersDataManager.m */,
 				84ECB28B1CE1EF9700D4CD87 /* BSNumbersView.h */,
 				84ECB28C1CE1EF9700D4CD87 /* BSNumbersView.m */,
-				84ECB28D1CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.h */,
-				84ECB28E1CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.m */,
-				84ECB28F1CE1EF9700D4CD87 /* NSString+BSNumbersExtension.h */,
-				84ECB2901CE1EF9700D4CD87 /* NSString+BSNumbersExtension.m */,
+				84ECB28F1CE1EF9700D4CD87 /* NSString+BSNumbers.h */,
+				84ECB2901CE1EF9700D4CD87 /* NSString+BSNumbers.m */,
+				84EDA3A61EB04948008A99D9 /* BSNumbersViewMarcos.h */,
+				84EDA3B61EB1991F008A99D9 /* BSNumbersViewEnum.h */,
 			);
 			path = BSNumbersView;
 			sourceTree = "<group>";
@@ -191,6 +198,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84032C921CB4F15F00F080D2 /* flightsInfo.plist in Resources */,
+				84EDA3BE1EB89471008A99D9 /* SampleCollectionCell.xib in Resources */,
 				84032C891CB4F13100F080D2 /* LaunchScreen.storyboard in Resources */,
 				84032C861CB4F13100F080D2 /* Assets.xcassets in Resources */,
 				84032C841CB4F13100F080D2 /* Main.storyboard in Resources */,
@@ -207,12 +215,12 @@
 				84ECB2911CE1EF9700D4CD87 /* BSNumbersCollectionCell.m in Sources */,
 				84032C811CB4F13100F080D2 /* ViewController.m in Sources */,
 				84032C961CB4F17900F080D2 /* Flight.m in Sources */,
-				84ECB2961CE1EF9700D4CD87 /* NSString+BSNumbersExtension.m in Sources */,
-				84ECB2931CE1EF9700D4CD87 /* BSNumbersDataManager.m in Sources */,
+				84ECB2961CE1EF9700D4CD87 /* NSString+BSNumbers.m in Sources */,
 				84032C7E1CB4F13100F080D2 /* AppDelegate.m in Sources */,
 				84032C7B1CB4F13100F080D2 /* main.m in Sources */,
 				84ECB2941CE1EF9700D4CD87 /* BSNumbersView.m in Sources */,
-				84ECB2951CE1EF9700D4CD87 /* NSObject+BSNumbersExtension.m in Sources */,
+				84ECB2951CE1EF9700D4CD87 /* NSObject+Extension.m in Sources */,
+				84EDA3BD1EB89471008A99D9 /* SampleCollectionCell.m in Sources */,
 				84ECB2921CE1EF9700D4CD87 /* BSNumbersCollectionHeaderView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

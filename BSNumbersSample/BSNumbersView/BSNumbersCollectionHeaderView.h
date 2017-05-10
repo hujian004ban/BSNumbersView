@@ -6,11 +6,12 @@
 //  Copyright © 2016年 blurryssky. All rights reserved.
 //
 
-#import "BSNumbersView.h"
+#import <UIKit/UIKit.h>
+#import "BSNumbersViewEnum.h"
 
 @interface BSNumbersCollectionHeaderView : UICollectionReusableView
 
-@property (assign, nonatomic) BSNumbersSeparatorStyle separatorStyle;
-@property (strong, nonatomic) UIColor *separatorColor;
+@property (nonatomic) BSNumbersSeparatorStyle rowSeparatorStyle;
+@property (nonatomic, strong) UIColor *rowSeparatorColor;
 
 @end

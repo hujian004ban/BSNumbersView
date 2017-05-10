@@ -10,15 +10,15 @@
 
 @interface Flight : NSObject
 
-@property (strong, nonatomic) NSString *company;
-@property (strong, nonatomic) NSString *number;
-@property (strong, nonatomic) NSString *typeOfAircraft;
-@property (strong, nonatomic) NSString *date;
-@property (strong, nonatomic) NSString *placeOfDeparture;
-@property (strong, nonatomic) NSString *placeOfDestination;
-@property (strong, nonatomic) NSString *departureTime;
-@property (strong, nonatomic) NSString *arriveTime;
-@property (strong, nonatomic) NSString *price;
+@property (nonatomic, strong) NSString *company;
+@property (nonatomic, strong) NSString *number;
+@property (nonatomic, strong) NSString *typeOfAircraft;
+@property (nonatomic, strong) NSString *date;
+@property (nonatomic, strong) NSString *placeOfDeparture;
+@property (nonatomic, strong) NSString *placeOfDestination;
+@property (nonatomic, strong) NSString *departureTime;
+@property (nonatomic, strong) NSString *arriveTime;
+@property (nonatomic, strong) NSString *price;
 
 - (instancetype)initWithDictionary:(NSDictionary *)dic;
 
