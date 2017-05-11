@@ -2,7 +2,7 @@
 
 ## Overview
 
-######if the view did not add constraints, you need to rotate the view manually when screen's orientation changed.
+###### if the view did not add constraints, you need to rotate the view manually when screen's orientation changed.
 
 ![BSNumbersViewGIF.gif](https://github.com/blurryssky/BSNumbers/blob/master/Screenshots/BSNumbersGIF.gif)
 
@@ -41,22 +41,22 @@ for (NSDictionary *flightInfo in flightsInfo) {
 
 @end
 ```
-###Set the datasource
+### Set the datasource
 ```objective-c
 self.numbersView.bodyData = flights;
 ```
-###Set optional property 
+### Set optional property 
 ```objective-c
 self.numbersView.headerData = @[@"Flight Company", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
 self.numbersView.freezeColumn = 1;
 self.numbersView.bodyFont = [UIFont systemFontOfSize:14];
 ```
-###Display
+### Display
 ```objective-c
 [self.numbersView reloadData];
 ```
 
-###All Properties
+### All Properties
 ```objective-c
 @interface BSNumbersView : UIView
 
@@ -118,9 +118,9 @@ self.numbersView.bodyFont = [UIFont systemFontOfSize:14];
 @end
 ```
 
-###Use delegate
+### Use delegate
 
-######every line is a section, and every column is a row
+###### every line is a section, and every column is a row
 
 ```objective-c
 #pragma mark -- BSNumbersViewDelegate
