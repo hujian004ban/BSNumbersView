@@ -10,9 +10,100 @@
 
 > pod 'BSNumbersView'
 
-## Usage
+## Usage For Tag '1.0.0', for more infomation, please download sample project
 
-### Supply an array with models as datasource
+### 3 data source method had to be implementation
+
+```objective-c
+- (NSInteger)numberOfColumnsInNumbersView:(BSNumbersView *)numbersView {
+    return _flights.firstObject.bs_propertyStringValues.count;
+}
+
+- (NSInteger)numberOfRowsInNumbersView:(BSNumbersView *)numbersView {
+    return _flights.count + 1;
+}
+
+- (NSAttributedString *)numbersView:(BSNumbersView *)numbersView attributedStringForItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+    NSString *string = nil;
+    if (indexPath.row == 0) {
+        string = _headerData[indexPath.column];
+    } else {
+        string = _flights[indexPath.row - 1].bs_propertyStringValues[indexPath.column];
+    }
+    
+    NSAttributedString *attributedString = [[NSAttributedString alloc]initWithString:string attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:14]}];
+    return attributedString;
+}
+```
+
+### 1 optional data source to be implementation, This will help custom the cell
+
+```objective-c
+- (UICollectionViewCell *)numbersView:(BSNumbersView *)numbersView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.row != 0) {
+        if (indexPath.column == 1) {
+            SampleCollectionCell *cell = [numbersView dequeueReusableCellWithReuseIdentifier:SampleCollectionCellReuseIdentifier forIndexPath:indexPath];
+            cell.string = _flights[indexPath.row - 1].bs_propertyStringValues[indexPath.column];
+            return cell;
+        }
+    }
+    return nil;
+}
+```
+### Custom your numbers view and then reload
+
+```objective-c
+_numbersView.columnsToFreeze = 1;
+_numbersView.itemMaxWidth = 300;
+_numbersView.itemMinWidth = 100;
+_numbersView.rowHeight = 50;
+
+_numbersView.isFreezeFirstRow = YES;
+_numbersView.delegate = self;
+_numbersView.dataSource = self;
+    
+[_numbersView registerNib:[UINib nibWithNibName:@"SampleCollectionCell" bundle:nil] forCellWithReuseIdentifier:SampleCollectionCellReuseIdentifier];
+...
+...
+[_numbersView reloadData];
+```
+
+### 3 optional delegate method to make it convenience
+
+```objective-c
+- (CGFloat)numbersView:(BSNumbersView *)numbersView heightForRow:(NSInteger)row {
+    if (row % 2 == 1) {
+        return 50;
+    } else {
+        return 100;
+    }
+}
+
+- (CGFloat)numbersView:(BSNumbersView *)numbersView widthForColumn:(NSInteger)column {
+    if (column == 1) {
+        return 150;
+    } else {
+        //this will caculate width automatic
+        return BSNumbersViewAutomaticDimension;
+    }
+}
+
+- (void)numbersView:(BSNumbersView *)numbersView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"%@", indexPath.bs_description);
+    
+    _headerData = @[@"???", @"Flight Number", @"Type Of Aircraft", @"Date", @"Place Of Departure", @"Place Of Destination", @"Departure Time", @"Arrive Time", @"Price"];
+    NSIndexPath *indexPathToReload = [NSIndexPath indexPathForColumn:0 inRow:0];
+    [numbersView reloadItemsAtIndexPaths:@[indexPathToReload]];
+    
+    //if someone need to modify the text, you can use UIAlertController to alert modify text,
+    //then use - (void)reloadItemsAtIndexPaths:(NSArray<NSIndexPath *> *)indexPaths;
+}
+```
+
+## Usage For Tag '0.2.6', for more infomation, please download sample project for tag '0.2.6'
+
+### Supply an array with models as data source
 
 ```objective-c
 NSArray<NSDictionary *> *flightsInfo = [NSArray arrayWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"flightsInfo" ofType:@"plist"]];
