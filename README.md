@@ -10,7 +10,7 @@
 
 > pod 'BSNumbersView'
 
-## Usage For Tag '1.0.0', for more infomation, please download sample project
+## Usage For Tag '1.0.0', for more infomation, download the sample project please
 
 ### 3 data source method had to be implementation
 
@@ -37,7 +37,7 @@
 }
 ```
 
-### 1 optional data source to be implementation, This will help custom the cell
+### 1 optional data source to be implementation, This will help make custom cell
 
 ```objective-c
 - (UICollectionViewCell *)numbersView:(BSNumbersView *)numbersView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -69,7 +69,7 @@ _numbersView.dataSource = self;
 [_numbersView reloadData];
 ```
 
-### 3 optional delegate method to make it convenience
+### 3 optional delegate method to provide more function
 
 ```objective-c
 - (CGFloat)numbersView:(BSNumbersView *)numbersView heightForRow:(NSInteger)row {
