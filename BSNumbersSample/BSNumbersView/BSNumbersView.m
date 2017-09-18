@@ -699,7 +699,7 @@ NSString * const HeaderReuseIdentifer = @"com.blurryssky.numbersview.collectionh
             column = indexPath.column - _columnsToFreeze;
         }
     }
-    return [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:[NSIndexPath indexPathForColumn:column inRow:row]];
+    return [collectionView dequeueReusableCellWithReuseIdentifier:identifier forIndexPath:[NSIndexPath indexPathForItem:column inSection:row]];
 }
 
 
